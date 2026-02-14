@@ -1,0 +1,126 @@
+/* Общие стили для тела документа */
+/*
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+*/
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding-top: 80px; /* для учета фиксированного хедера */
+}
+
+/* Стиль контейнера при логине / регистрации */
+.container {
+    background-color: #fff;
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 340px;
+    max-width: 90%;
+    margin: 0 auto; /* Центрируем по горизонтали */
+}
+
+/* Заголовки */
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Формы для входа/регистрации */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+input[type=text], input[type=password], input[type=email] {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Кнопки */
+button {
+    padding: 12px;
+    background-color: #5c7cfa;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #4668dd;
+}
+
+/* Текст и ссылки */
+p {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+a {
+    color: #5c7cfa;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* ====================
+   Навигация горизонтально
+   ==================== */
+header {
+    width: 100%;
+    background-color: #f4f4f4; /* или другой цвет, по желанию */
+    position: fixed; /* фиксированный верх */
+    top: 0;
+    left: 0;
+    z-index: 999;
+}
+
+/* Блок, в котором хранятся заголовок и меню */
+.header-top {
+    display: flex;
+    flex-direction: column; /* сверху вниз */
+    align-items: center; /* по центру */
+    padding: 10px 20px;
+}
+
+/* Для горизонтального меню внутри заголовка */
+nav {
+    width: 100%;
+    background: #007bff;
+    display: flex;
+    justify-content: center; /* по центру */
+    padding: 10px 0;
+}
+
+nav ul {
+    display: flex;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+nav li {
+    margin: 0 15px;
+}
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}

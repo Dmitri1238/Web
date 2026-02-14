@@ -1,0 +1,19 @@
+<!-- main/book_card.html -->
+<div class="book">
+    <div class="book-img-container">
+        {% if book.image %}
+            <img src="{{ book.image.url }}" alt="{{ book.title }}" class="book-img" />
+        {% else %}
+            <p>Нет изображения</p>
+        {% endif %}
+    </div>
+    <h4>{{ book.title }}</h4>
+    <p>Автор: {{ book.author }}</p>
+    <p class="price">Цена: {{ book.price }} ₽</p>
+    
+    <!-- Форма для добавления в корзину -->
+    <form method="post" action="{% url 'add_to_cart' book.id %}">
+        {% csrf_token %}
+        <button type="submit">Добавить в корзину</button>
+    </form>
+</div>

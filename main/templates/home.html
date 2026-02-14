@@ -1,0 +1,255 @@
+<!--home.html-->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Мой книжный магазин</title>
+    <style>
+        /* Простое оформление */
+
+        body {
+            display: flex;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between; /* Чтобы разместить навигацию и корзину по краям */
+            align-items: center;
+            flex-wrap: wrap; /* Чтобы лучше адаптироваться на мобильных */
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav {
+            margin-top: 10px;
+        }
+
+        nav a {
+            color: white;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+
+        /* Блок информации о корзине */
+        .cart-info {
+            margin-left: 20px;
+        }
+
+        /* Новая стилизация для ссылки "В корзине" */
+        .cart-info a {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+            color: white;
+            font-weight: bold;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+            display: inline-block;
+            font-size: 14px;
+        }
+
+        .cart-info a:hover {
+            background: linear-gradient(135deg, #ff6f61, #f9a16f);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Ленточка с баннером */
+        #banner {
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #ffeaa7;
+            text-align: center;
+        }
+
+        #banner img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Основная часть с боковой навигацией и контент */
+        .main {
+            display: flex;
+            width: 100%;
+            flex: 1; /* чтобы занимало всё свободное место */
+        }
+
+        /* Обертка для прокрутки */
+        #content-wrapper {
+            flex: 1;
+            display: flex;
+            height: 80vh; /* фиксированная высота экрана */
+            overflow-y: auto; /* вертикальная прокрутка */
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        /* Левая колонка — вертикальное меню */
+        aside {
+            width: 220px;
+            background-color: #f0f0f0;
+            padding: 15px;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        aside h3 {
+            margin-top: 0;
+        }
+
+        aside ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        aside li {
+            margin-bottom: 10px;
+        }
+
+        aside a {
+            text-decoration: none;
+            color: #333;
+        }
+
+        /* Основной контент */
+        #catalog {
+            flex: 1;
+            padding: 15px;
+        }
+
+        /* Книги */
+        .book {
+            border-bottom: 1px solid #ccc;
+            padding: 10px 0;
+        }
+
+        /* Стиль для кнопки 'Добавить в корзину' */
+        /* Этот блок — добавил в конец вашего existing CSS */
+        button[type="submit"] {
+            background-color: #28a745; /* зеленый */
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+
+        /* Футер */
+        footer {
+            width: 100%;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Заголовок и навигация -->
+    <header>
+        <div>
+            <h1>Мой книжный магазин</h1>
+        </div>
+
+        <!-- Навигация -->
+        <nav>
+            <a href="/">Главная</a>
+            <a href="/catalog/">Каталог</a>
+            <a href="/courses/">Курсы</a>
+            <a href="/about/">О нас</a>
+            <a href="/contacts/">Контакты</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}">Выйти</a>
+            {% else %}
+                <a href="{% url 'login' %}">Войти</a>
+                <a href="{% url 'register' %}">Регистрация</a>
+            {% endif %}
+        </nav>
+
+        <!-- Блок с информацией о корзине -->
+        <div class="cart-info">
+            <a href="/cart/">В корзине: {{ request.session.cart|length }} товаров</a>
+        </div>
+    </header>
+
+    <!-- Баннер -->
+    <section id="banner">
+        <h2>Акции и скидки на книги!</h2>
+        <img src="/static/banner.jpg" alt="Акции" />
+    </section>
+
+    <!-- Основной раздел: слева — навигация по категориям, справа — контент -->
+    <div class="main">
+        <!-- Обертка с прокруткой -->
+        <div id="content-wrapper">
+            <!-- Вертикальная навигация по типам книг -->
+            <aside>
+                <h3>Типы книг</h3>
+                <ul>
+                    <!-- Переменные для подсчета -->
+                    <li><a href="{% url 'category' 'literature' %}">Литература ({{ count_literature }})</a></li>
+                    <li><a href="{% url 'category' 'prose' %}">Проза ({{ count_prose }})</a></li>
+                    <li><a href="{% url 'category' 'comics' %}">Комиксы ({{ count_comics }})</a></li>
+                    <li><a href="{% url 'category' 'fairy-tales' %}">Сказки ({{ count_fairy_tales }})</a></li>
+                </ul>
+            </aside>
+
+            <!-- Основной контент -->
+            <section id="catalog">
+                <h3>Добро пожаловать в наш магазин! Выберите категорию.</h3>
+                <p>Здесь можно просматривать книги, узнавать о новинках и спецпредложениях.</p>
+
+                <!-- Пример вывода книг (если есть переменная 'books') -->
+                {% for book in books %}
+                <div class="book">
+                    <div class="book-img-container">
+                        {% if book.image %}
+                            <img src="{{ book.image.url }}" alt="{{ book.title }}" class="book-img" />
+                        {% else %}
+                            <p>Нет изображения</p>
+                        {% endif %}
+                    </div>
+                    <h4>{{ book.title }}</h4>
+                    <p>Автор: {{ book.author }}</p>
+                    <p class="price">Цена: {{ book.price }} ₽</p>
+                    
+                    <!-- Форма для добавления -->
+                    <form method="post" action="{% url 'add_to_cart' book.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Добавить в корзину</button>
+                    </form>
+                </div>
+                {% empty %}
+                <p>В данной категории книг нет.</p>
+                {% endfor %}
+            </section>
+        </div>
+    </div>
+
+    <!-- Футер -->
+    <footer>
+        <p>Контакты: телефон, email</p>
+        <p>Социальные сети: ...</p>
+        <p>&copy; 2026 Мой магазин</p>
+    </footer>
+</body>
+</html>

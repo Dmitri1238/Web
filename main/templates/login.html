@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Вход — Онлайн Магазин</title>
+    {% load static %}
+    <!-- Подключение внешнего файла стилей -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+    <!-- Контейнер формы входа -->
+    <div class="container">
+        <h2>Вход в аккаунт</h2>
+        <!-- Форма для входа -->
+        <form method="post">
+            {% csrf_token %}
+            <!-- Отображение формы Django -->
+            {{ form.as_p }}
+            <!-- Кнопка входа -->
+            <button type="submit">Войти</button>
+        </form>
+        <!-- Ссылка для тех, кто еще не зарегистрировался -->
+        <p>Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+    </div>
+</body>
+</html>

@@ -1,7 +1,8 @@
+# my_django_project/urls.py
 from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('main.urls')),  # подключение URL-ов из app 'main'
+    path('', include('main.urls')),
 ]

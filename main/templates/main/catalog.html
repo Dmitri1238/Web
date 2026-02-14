@@ -1,0 +1,14 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<h2>Все категории</h2>
+
+<ul>
+    {% for category in categories %}
+        <li><a href="{% url 'category' category.slug %}">{{ category.name }}</a></li>
+    {% endfor %}
+</ul>
+
+<h3>или просмотреть книги в категории</h3>
+<!-- Можно добавить список книг или категорий -->
+{% endblock %}

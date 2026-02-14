@@ -1,0 +1,12 @@
+{% extends 'home.html' %}
+
+{% block content %}
+<h3>Категория: {{ category_name }}</h3>
+<div class="books-container">
+    {% for book in books %}
+        {% include 'main/book_card.html' %}
+    {% empty %}
+        <p>Книг в этой категории пока нет.</p>
+    {% endfor %}
+</div>
+{% endblock %}
