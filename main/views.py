@@ -32,6 +32,7 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'login.html', {'form': form})
 
+@login_required
 def logout_view(request):
     logout(request)
     return redirect('login')
@@ -49,7 +50,7 @@ def home(request):
         'count_literature': counts.get('literature', 0),
         'count_prose': counts.get('prose', 0),
         'count_comics': counts.get('comics', 0),
-        'count_fairy_tales': counts.get('fairy-tales', 0),
+        'count_fairy_tales': counts.get('fairy_tales', 0),
     })
 
 @login_required
@@ -74,15 +75,15 @@ def category_view(request, category):
 @login_required
 def catalog_view(request):
     books = Book.objects.all()
-    return render(request, 'literature.html', {'books': books})
+    return render(request, 'main/catalog.html', {'books': books})
 
 @login_required
 def add_to_cart(request, book_id):
     if request.method == 'POST':
         cart = request.session.get('cart', {})
-        cart[book_id] = cart.get(book_id, 0) + 1
+        book_id_str = str(book_id)
+        cart[book_id_str] = cart.get(book_id_str, 0) + 1
         request.session['cart'] = cart
-        # Можно добавить сообщение или редирект
         return redirect(request.META.get('HTTP_REFERER', '/'))
     
 @login_required
@@ -116,6 +117,7 @@ def cart_view(request):
 
     return render(request, 'cart.html', context)
 
+@login_required
 @require_POST
 def remove_from_cart(request, book_id):
     cart = request.session.get('cart', {})

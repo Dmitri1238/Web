@@ -1,33 +1,28 @@
-<!-- main/literature.html -->
+<!-- main/fairy_tales.html -->
 {% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
-    <title>Литература</title>
+    <title>Сказки</title>
     <link rel="stylesheet" href="{% static 'css/auth.css' %}">
     <link rel="stylesheet" href="{% static 'css/book.css' %}">
     <style>
-    /* Сделать так, чтобы в ряду было ровно 5 книг */
     .books-container {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
         gap: 10px;
-        /* Добавляем margin-top, чтобы отделить от хедера */
-        margin-top: 80px; /* увеличьте при необходимости, чтобы компенсировать высоту header */
-        padding: 10px; /* немного отступов внутри контейнера */
+        margin-top: 80px;
+        padding: 10px;
         box-sizing: border-box;
-        /* Можно добавить background-color, чтобы видеть границы */
-        /* background-color: #eef; */
     }
-</style>
+    </style>
 </head>
 <body>
 
-<!-- Навигация -->
 <header>
     <div class="header-top">
-        <h1>Мой книжный магазин</h1>
+        <h1>Сказки</h1>
         <nav>
             <ul>
                 <li><a href="/">Главная</a></li>

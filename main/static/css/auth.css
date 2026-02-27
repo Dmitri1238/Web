@@ -1,15 +1,18 @@
-/* Общие стили для тела документа */
-/*
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+/* static/css/auth.css */
+.logo-title {
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      padding: 8px;
+      width: max-content;
+  }
+
+.header-logo {
+      width: 32px !important;
+      height: 32px !important;
+      object-fit: contain !important;
+      display: block;
 }
-*/
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;

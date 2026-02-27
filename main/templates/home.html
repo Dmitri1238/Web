@@ -1,9 +1,11 @@
 <!--home.html-->
+{% load static %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
-    <title>Мой книжный магазин</title>
+    <title>Книжный магазин</title>
+    <link rel="icon" href="{% static 'img/logo(1).svg' %}" type="image/svg+xml" />
     <style>
         /* Простое оформление */
 
@@ -48,7 +50,7 @@
         /* Новая стилизация для ссылки "В корзине" */
         .cart-info a {
             padding: 8px 16px;
-            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+            background: linear-gradient(135deg, #72aaeb, #9222fa);
             color: white;
             font-weight: bold;
             border-radius: 20px;
@@ -59,7 +61,7 @@
         }
 
         .cart-info a:hover {
-            background: linear-gradient(135deg, #ff6f61, #f9a16f);
+            background: linear-gradient(135deg, #8b32ff, #f032c0);
             box-shadow: 0 6px 15px rgba(0,0,0,0.3);
             transform: translateY(-2px);
         }
@@ -161,13 +163,28 @@
             padding: 10px 0;
             margin-top: 20px;
         }
+        .logo-title {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            padding: 8px;
+            width: max-content;
+        }
+
+        .header-logo {
+            width: 32px !important;
+            height: 32px !important;
+            object-fit: contain !important;
+            display: block;
+        }
     </style>
 </head>
 <body>
     <!-- Заголовок и навигация -->
     <header>
-        <div>
-            <h1>Мой книжный магазин</h1>
+        <div class="logo-title">
+            <img src="{% static 'img/logo(1).svg' %}" alt="Логотип" class="header-logo" />
+            <h1>Книжный магазин</h1>
         </div>
 
         <!-- Навигация -->
@@ -209,7 +226,7 @@
                     <li><a href="{% url 'category' 'literature' %}">Литература ({{ count_literature }})</a></li>
                     <li><a href="{% url 'category' 'prose' %}">Проза ({{ count_prose }})</a></li>
                     <li><a href="{% url 'category' 'comics' %}">Комиксы ({{ count_comics }})</a></li>
-                    <li><a href="{% url 'category' 'fairy-tales' %}">Сказки ({{ count_fairy_tales }})</a></li>
+                    <li><a href="{% url 'category' 'fairy_tales' %}">Сказки ({{ count_fairy_tales }})</a></li>
                 </ul>
             </aside>
 
