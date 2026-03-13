@@ -1,0 +1,192 @@
+{% load static %}
+{% load utils %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>{{ book.title }}</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <style>
+        /* Общее оформление страницы */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding-top: 80px;
+        }
+
+        /* Основной контейнер */
+        .book-detail {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-family: Arial, sans-serif;
+        }
+
+        /* Стиль для изображения */
+        .book-img-container {
+            text-align: center;
+        }
+
+        .book-img {
+            max-width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            transition: transform 0.3s;
+        }
+
+        /* Заголовок */
+        .book-title {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        /* Цена и автор */
+        p {
+            margin: 4px 0;
+        }
+
+        /* Кнопки и действия */
+        .add-comment-btn, .add-to-cart {
+            display: inline-block;
+            padding: 8px 12px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .add-comment-btn {
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+        }
+
+        .add-comment-btn:hover {
+            background-color: #218838;
+        }
+
+        .add-to-cart {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .add-to-cart:hover {
+            background-color: #0069d9;
+        }
+
+        /* Комментарии */
+        .comments-section {
+            margin-top: 20px;
+        }
+
+        .comment {
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 10px;
+            position: relative; /* Для позиционирования крестика */
+        }
+
+        /* Кнопка удаления комментария (крестик) */
+        .delete-comment {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: red;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            font-size: 40px;
+            line-height: 25px;
+            cursor: pointer;
+            text-align: center;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Мобильная адаптация */
+        @media(max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+            }
+            nav ul li {
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Навигационное меню -->
+<nav>
+    <ul>
+        <li><a href="/">Главная</a></li>
+        <li><a href="/catalog/">Каталог</a></li>
+        <li><a href="/courses/">Курсы</a></li>
+        <li><a href="/about/">О нас</a></li>
+        <li><a href="/contacts/">Контакты</a></li>
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'logout' %}">Выйти</a></li>
+        {% else %}
+            <li><a href="{% url 'login' %}">Войти</a></li>
+            <li><a href="{% url 'register' %}">Регистрация</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<!-- Основной контент -->
+<div class="book-detail">
+
+    <!-- Изображение книги -->
+    <div class="book-img-container">
+        {% if book.image %}
+            <img src="{{ book.image.url }}" alt="{{ book.title }}" class="book-img" />
+        {% else %}
+            <p>Нет изображения</p>
+        {% endif %}
+    </div>
+
+    <!-- Название -->
+    <h2 class="book-title">{{ book.title }}</h2>
+
+    <!-- Автор и цена -->
+    <p>Автор: {{ book.author }}</p>
+    <p class="price">Цена: {{ book.price }} ₽</p>
+
+    <!-- Кнопка добавления комментария -->
+    <a href="{% url 'add_comment' book.id %}" class="add-comment-btn">Добавить комментарий</a>
+
+    <!-- Комментарии -->
+    <div class="comments-section">
+        <h3 style="margin-top: 20px;">Комментарии</h3>
+        {% for comment in book.comments.all %}
+            <div class="comment">
+                <strong>{{ comment.user.first_name|default:comment.user.username }}</strong>: {{ comment.content }}<br>
+                <small>{{ comment.created_at }}</small>
+
+                <!-- Если комментарий создан текущим пользователем, показываем кнопку удаления -->
+                {% if user|is_moderator or comment.user == user or user.is_superuser %}
+                    <form method="POST" action="{% url 'delete_comment' comment.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="delete-comment" title="Удалить">&times;</button>
+                    </form>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>Нет комментариев.</p>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>

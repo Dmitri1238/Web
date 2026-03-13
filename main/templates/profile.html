@@ -1,0 +1,146 @@
+<!--profile.html-->
+{% load static %}
+{% load utils %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Профиль</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <style>
+        /* Основные стили для страницы профиля */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding-top: 80px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Основной контейнер профиля */
+        .profile-container {
+            max-width: 700px;
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Заголовок профиля */
+        .profile-title {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            color: #222;
+        }
+
+        /* Верхняя часть профиля: фото + информация */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Аватар */
+        .avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 10px;
+            object-fit: cover;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            border: 2px solid #ddd;
+        }
+
+        /* Информация о пользователе */
+        .user-info {
+            flex: 1;
+            font-size: 18px;
+            line-height: 1.4;
+        }
+
+        /* Кнопка редактирования */
+        .edit-profile-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+
+        .edit-profile-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Адаптивность */
+        @media(max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .user-info {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h2 class="profile-title">Личный кабинет</h2>
+
+<!-- Навигация -->
+<nav>
+    <ul>
+        <li><a href="/">Главная</a></li>
+        <li><a href="/catalog/">Каталог</a></li>
+        <li><a href="/about/">О нас</a></li>
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'logout' %}">Выйти</a></li>
+        {% else %}
+            <li><a href="{% url 'login' %}">Войти</a></li>
+            <li><a href="{% url 'register' %}">Регистрация</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<!-- Основной блок профиля -->
+<div class="profile-container">
+    <!-- Верхняя часть: фото и информация -->
+    <div class="profile-header">
+        <div>
+            {% if user.userprofile.avatar %}
+                <img src="{{ user.userprofile.avatar.url }}" alt="Аватар" class="avatar">
+            {% else %}
+                <div style="width:150px; height:150px; display:flex; align-items:center; justify-content:center; background-color:#e0e0e0; border-radius:10px; font-size:16px; color:#555;">Нет аватара</div>
+            {% endif %}
+        </div>
+        <div class="user-info">
+            <p><strong>Имя:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+            <p><strong>Логин:</strong> {{ user.username }}</p>
+            <p><strong>Email:</strong> {{ user.email }}</p> 
+
+            <!-- Отображение статуса -->
+            {% if user.userprofile.status in statuses %}
+                <p><strong>Статус:</strong> {{ statuses|get_item:user.userprofile.status }}</p>
+            {% else %}
+                <p><strong>Статус:</strong> Неизвестен</p>
+            {% endif %}
+
+            <a href="{% url 'profile_edit' %}" class="edit-profile-btn">Редактировать профиль</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,98 @@
+{% load static %}
+{% load utils %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>О нас</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <style>
+        /* Общие стили страницы */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding-top: 80px;
+        }
+
+        /* Заголовок страницы */
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 36px;
+            color: #333;
+        }
+
+        
+
+        /* Блок с информацией о книгах */
+        .info-block {
+            background-color: #f5f5f5;
+            padding: 40px 20px;
+            max-width: 800px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            font-family: Arial, sans-serif;
+        }
+
+        .info-block h2 {
+            text-align: center;
+            color: #336699;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .info-block p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-top: 20px;
+        }
+
+        /* Адаптивность */
+        @media(max-width: 768px) {
+            body {
+                padding-top: 60px;
+            }
+            h1 {
+                font-size: 28px;
+            }
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            nav ul li {
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>О нас</h1>
+
+<!-- Навигация -->
+<nav>
+    <ul>
+        <li><a href="/">Главная</a></li>
+        <li><a href="/catalog/">Каталог</a></li>
+        <li><a href="/courses/">Курсы</a></li>
+        <li><a href="/about/">О нас</a></li>
+        <li><a href="/contacts/">Контакты</a></li>
+    </ul>
+</nav>
+
+<!-- Блок с информацией -->
+<div class="info-block">
+    <h2>Наши книги — ваш путь к знаниям и вдохновению</h2>
+    <p>
+        В мире книг каждое слово — это ключ к новым мирам, идеям и открытиям. Мы верим, что чтение — это не только способ расширить горизонты, но и источник вдохновения для жизни. Наша миссия — помочь каждому найти свою книгу, которая зажжёт искру любопытства и поможет расти как личность.
+    </p>
+    <p>
+        В нашем каталоге вы найдете книги о различной тематике: от классической литературы и научных открытий до современных бестселлеров. Каждая книга — это шаг к вашим мечтам и целям. Читайте, развивайтесь и вдохновляйтесь вместе с нами!
+    </p>
+</div>
+
+</body>
+</html>

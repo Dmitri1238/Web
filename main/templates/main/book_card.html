@@ -1,4 +1,5 @@
 <!-- main/book_card.html -->
+{% load utils %}
 <div class="book">
     <div class="book-img-container">
         {% if book.image %}
@@ -11,9 +12,193 @@
     <p>Автор: {{ book.author }}</p>
     <p class="price">Цена: {{ book.price }} ₽</p>
     
-    <!-- Форма для добавления в корзину -->
-    <form method="post" action="{% url 'add_to_cart' book.id %}">
+    <!-- Оценка -->
+    <div class="rating" data-book-id="{{ book.id }}" data-user-rating="{{ user_ratings|get_item:book.id|default:'0' }}">
+        <div class="stars">
+            <span class="star" data-value="1">&#9733;</span>
+            <span class="star" data-value="2">&#9733;</span>
+            <span class="star" data-value="3">&#9733;</span>
+            <span class="star" data-value="4">&#9733;</span>
+            <span class="star" data-value="5">&#9733;</span>
+        </div>
+        <div class="average-rating">Средняя оценка: <span class="avg-score">0</span></div>
+        <div id="rating-error" style="color: red; font-size: small; display: none; margin-top: 5px;">Выберите оценку перед отправкой</div>
+        <!-- Кнопки -->
+        <button class="rate-btn" style="margin-top:5px;">Поставить оценку</button>
+        <button class="rated-fixed" style="margin-top:5px; display:none; background-color: #ccc; cursor: default;">Оценка поставлена</button>
+    </div>
+
+    <a href="{% url 'book_detail' book.id %}" class="view-details-btn" style="display:inline-block; padding:8px 12px; background-color:#2da000; color:white; text-decoration:none; border-radius:4px; margin-top:10px;">Подробнее</a>
+
+
+    <!-- Пространство между кнопками -->
+    <div style="margin-top: 15px;">
+        <!-- Форма для добавления в корзину -->
+        <form method="post" action="{% url 'add_to_cart' book.id %}">
+            {% csrf_token %}
+            <button type="submit" class="add-to-cart">Добавить в корзину</button>
+        </form>
+    </div>
+    {% if user.is_superuser %}
+    <form method="post" action="{% url 'delete_book' book.id %}">
         {% csrf_token %}
-        <button type="submit">Добавить в корзину</button>
+        <button type="submit" style="margin-top:10px; padding:5px 10px; background-color:red; color:white; border:none; border-radius:4px; cursor:pointer;">Удалить книгу</button>
     </form>
+    {% endif %}
 </div>
+
+<style>
+/* Стиль звезд (белые внутри по умолчанию) */
+.stars {
+  display: inline-block;
+  font-size: 24px;
+  cursor: pointer;
+  user-select: none;
+  background: transparent;
+  line-height: 1;
+}
+
+.star {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background-color: transparent; /* прозрачное внутри */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9" /></svg>');
+  background-size: contain;
+  background-repeat: no-repeat;
+  transition: background-image 0.3s, color 0.3s;
+  color: white; /* внутри звезд - белый по умолчанию */
+}
+
+.star.filled {
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="orange"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9" /></svg>');
+  color: orange; /* при выборе тоже можно менять цвет */
+}
+</style>
+
+<!-- Скрипт -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.rating').forEach(ratingDiv => {
+        const bookId = ratingDiv.dataset.bookId;
+        let userRating = parseInt(ratingDiv.dataset.userRating || '0'); // получаем из html
+        const starsContainer = ratingDiv.querySelector('.stars');
+        const errorMsg = ratingDiv.querySelector('#rating-error');
+        const avgScoreSpan = ratingDiv.querySelector('.avg-score');
+        const rateBtn = ratingDiv.querySelector('.rate-btn');
+        const fixedBtn = ratingDiv.querySelector('.rated-fixed');
+
+        let currentRating = 0;
+
+        // Если есть уже оценка пользователя
+        if (userRating > 0) {
+            currentRating = userRating;
+            setStars(ratingDiv, currentRating);
+            // Показываем что оценка поставлена
+            fixedBtn.style.display = 'inline-block';
+            rateBtn.style.display = 'none';
+
+            // Отключаем звездочки
+            starsContainer.querySelectorAll('.star').forEach(star => {
+                star.style.pointerEvents = 'none';
+            });
+        } else {
+            // Нет оценки, активируем звезды
+            starsContainer.querySelectorAll('.star').forEach(star => {
+                star.style.pointerEvents = 'auto';
+            });
+        }
+
+        // Получить средний рейтинг с сервера
+        fetch(`/api/book/${bookId}/average/`)
+            .then(res => res.json())
+            .then(data => {
+                const avg = data.average || 0;
+                setStars(ratingDiv, avg);
+                avgScoreSpan.textContent = avg.toFixed(1);
+            });
+
+        // Обработка кликов по звездам
+        starsContainer.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', () => {
+                if (currentRating === 0 && fixedBtn.style.display === 'none') {
+                    currentRating = parseInt(star.dataset.value);
+                    setStars(ratingDiv, currentRating);
+                }
+            });
+        });
+
+        // Наведение мыши на звезды
+        starsContainer.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('mouseover', () => {
+                const value = parseInt(star.dataset.value);
+                setHoverStars(ratingDiv, value);
+            });
+            star.addEventListener('mouseout', () => {
+                setStars(ratingDiv, currentRating || 0);
+            });
+        });
+
+        // Обработка "Поставить оценку"
+        rateBtn.addEventListener('click', () => {
+            if (currentRating === 0) {
+                errorMsg.style.display = 'block';
+                return;
+            } else {
+                errorMsg.style.display = 'none';
+            }
+
+            fetch(`/api/book/${bookId}/rate/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ rating: currentRating })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.error) {
+                    setStars(ratingDiv, data.average);
+                    avgScoreSpan.textContent = data.average.toFixed(1);
+                    
+                    // Обновляем атрибут data-user-rating
+                    ratingDiv.dataset.userRating = currentRating;
+
+                    // Показываем "Оценка поставлена" и блокируем звезды
+                    fixedBtn.style.display = 'inline-block';
+                    rateBtn.style.display = 'none';
+
+                    // Блокируем клики по звездам
+                    starsContainer.querySelectorAll('.star').forEach(star => {
+                        star.style.pointerEvents = 'none';
+                    });
+                }
+            });
+        });
+
+        // Функции для установки звезд
+        function setStars(ratingDiv, rating) {
+            ratingDiv.querySelectorAll('.star').forEach(star => {
+                if (parseInt(star.dataset.value) <= Math.round(rating)) {
+                    star.classList.add('filled');
+                } else {
+                    star.classList.remove('filled');
+                }
+            });
+        }
+
+        // Новая функция для подсветки при наведении
+        function setHoverStars(ratingDiv, hoverRating) {
+            ratingDiv.querySelectorAll('.star').forEach(star => {
+                const starVal = parseInt(star.dataset.value);
+                if (starVal <= hoverRating) {
+                    star.classList.add('filled');
+                } else {
+                    star.classList.remove('filled');
+                }
+            });
+        }
+    });
+});
+</script>

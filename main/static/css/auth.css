@@ -1,24 +1,4 @@
 /* static/css/auth.css */
-.logo-title {
-      display: flex !important;
-      align-items: center !important;
-      gap: 8px !important;
-      padding: 8px;
-      width: max-content;
-  }
-
-.header-logo {
-      width: 32px !important;
-      height: 32px !important;
-      object-fit: contain !important;
-      display: block;
-}
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding-top: 80px; /* для учета фиксированного хедера */
-}
 
 /* Стиль контейнера при логине / регистрации */
 .container {
@@ -87,43 +67,3 @@ a:hover {
 /* ====================
    Навигация горизонтально
    ==================== */
-header {
-    width: 100%;
-    background-color: #f4f4f4; /* или другой цвет, по желанию */
-    position: fixed; /* фиксированный верх */
-    top: 0;
-    left: 0;
-    z-index: 999;
-}
-
-/* Блок, в котором хранятся заголовок и меню */
-.header-top {
-    display: flex;
-    flex-direction: column; /* сверху вниз */
-    align-items: center; /* по центру */
-    padding: 10px 20px;
-}
-
-/* Для горизонтального меню внутри заголовка */
-nav {
-    width: 100%;
-    background: #007bff;
-    display: flex;
-    justify-content: center; /* по центру */
-    padding: 10px 0;
-}
-
-nav ul {
-    display: flex;
-    padding: 0;
-    margin: 0;
-    list-style: none;
-}
-nav li {
-    margin: 0 15px;
-}
-nav a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-}

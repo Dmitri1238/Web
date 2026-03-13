@@ -1,0 +1,134 @@
+<!-- templates/add_comment.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Добавить комментарий</title>
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+    <style>
+        /* Общие стили страницы */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding-top: 80px;
+        }
+
+        /* Заголовок страницы */
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        
+
+        /* Контейнер формы */
+        .form-container {
+            max-width: 700px;
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Заголовок формы */
+        .form-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 22px;
+            color: #222;
+        }
+
+        /* Форма и элементы */
+        form textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Кнопка отправки */
+        .submit-btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Ссылка для возврата */
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 16px;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            color: #0056b3;
+        }
+
+        /* Мобильная адаптация */
+        @media(max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+            }
+            nav ul li {
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Навигационное меню -->
+<nav>
+    <ul>
+        <li><a href="/">Главная</a></li>
+        <li><a href="/catalog/">Каталог</a></li>
+        <li><a href="/courses/">Курсы</a></li>
+        <li><a href="/about/">О нас</a></li>
+        <li><a href="/contacts/">Контакты</a></li>
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'logout' %}">Выйти</a></li>
+        {% else %}
+            <li><a href="{% url 'login' %}">Войти</a></li>
+            <li><a href="{% url 'register' %}">Регистрация</a></li>
+        {% endif %}
+    </ul>
+</nav>
+
+<h2 class="form-title">Добавить комментарий к "{{ book.title }}"</h2>
+
+<!-- Контейнер формы -->
+<div class="form-container">
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="comment" rows="4" placeholder="Ваш комментарий..."></textarea>
+        <div style="text-align: center;">
+            <button type="submit" class="submit-btn">Отправить комментарий</button>
+        </div>
+    </form>
+    <a href="{% url 'book_detail' book.id %}" class="back-link">&#8592; Вернуться к книге</a>
+</div>
+
+</body>
+</html>

@@ -177,9 +177,58 @@
             object-fit: contain !important;
             display: block;
         }
+
+        .profile-link {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+    }
+    .profile-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #007bff;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 20px;
+        cursor: pointer;
+        transition: box-shadow 0.3s, outline 0.3s;
+    }
+    .profile-icon:hover {
+        outline: 2px solid #c2f704; /* белая рамка */
+        box-shadow: 0 0 0 3px #ffffff inset; /* эффект */
+    }
+    .profile-name {
+        margin-left: 10px;
+        font-size: 16px;
+        transition: text-decoration 0.3s;
+    }
+    .profile-name:hover {
+        text-decoration: underline;
+}
     </style>
 </head>
+
 <body>
+    <!-- Добавим сверху — блок профиля -->
+    <div style="display: flex; align-items: center; padding: 10px;">
+        {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="profile-link">
+                <div class="profile-icon">
+                    {% if user.userprofile.avatar %}
+                        <img src="{{ user.userprofile.avatar.url }}" alt="Аватар" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    {% else %}
+                        {{ user.first_name|default:user.username|slice:":1"|upper }}
+                    {% endif %}
+                </div>
+                <span class="profile-name">{{ user.first_name|default:user.username }}</span>
+            </a>
+        {% endif %}
+</div>
     <!-- Заголовок и навигация -->
     <header>
         <div class="logo-title">
@@ -191,9 +240,7 @@
         <nav>
             <a href="/">Главная</a>
             <a href="/catalog/">Каталог</a>
-            <a href="/courses/">Курсы</a>
             <a href="/about/">О нас</a>
-            <a href="/contacts/">Контакты</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'logout' %}">Выйти</a>
             {% else %}
@@ -234,30 +281,6 @@
             <section id="catalog">
                 <h3>Добро пожаловать в наш магазин! Выберите категорию.</h3>
                 <p>Здесь можно просматривать книги, узнавать о новинках и спецпредложениях.</p>
-
-                <!-- Пример вывода книг (если есть переменная 'books') -->
-                {% for book in books %}
-                <div class="book">
-                    <div class="book-img-container">
-                        {% if book.image %}
-                            <img src="{{ book.image.url }}" alt="{{ book.title }}" class="book-img" />
-                        {% else %}
-                            <p>Нет изображения</p>
-                        {% endif %}
-                    </div>
-                    <h4>{{ book.title }}</h4>
-                    <p>Автор: {{ book.author }}</p>
-                    <p class="price">Цена: {{ book.price }} ₽</p>
-                    
-                    <!-- Форма для добавления -->
-                    <form method="post" action="{% url 'add_to_cart' book.id %}">
-                        {% csrf_token %}
-                        <button type="submit">Добавить в корзину</button>
-                    </form>
-                </div>
-                {% empty %}
-                <p>В данной категории книг нет.</p>
-                {% endfor %}
             </section>
         </div>
     </div>

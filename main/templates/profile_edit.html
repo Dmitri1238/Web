@@ -1,0 +1,94 @@
+<!--profile_edit.html-->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Редактировать профиль</title>
+    {% load static %}
+    <!-- Подключение внешнего файла стилей -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/auth.css' %}">
+    <style>
+        /* Можно добавить немного кастомных стилей для формы */
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            font-family: Arial, sans-serif;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Стиль кнопки */
+        button[type="submit"] {
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        /* Сделать поля формы более приятными */
+        input[type="text"],
+        input[type="email"],
+        input[type="file"],
+        select,
+        textarea {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-family: inherit;
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="file"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Контейнер формы редактирования профиля -->
+    <div class="container">
+        <h2>Редактировать профиль</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ user_form.as_p }}
+            {{ profile_form.as_p }}
+
+            <button type="submit">Сохранить</button>
+        </form>
+        <!-- Можно добавить ссылку для возвращения в профиль, если нужно -->
+        <p style="text-align:center; margin-top:15px;">
+            <a href="{% url 'profile' %}">Вернуться к профилю</a>
+        </p>
+    </div>
+</body>
+</html>

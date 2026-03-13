@@ -1,13 +1,24 @@
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout, authenticate
 from .forms import RegisterForm
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from .models import Book
+from .models import Book, Comment
 from .models import Category
+from .models import Rating
+from .models import UserProfile
+import json
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+import logging
+logger = logging.getLogger(__name__)
+from django.contrib.auth.decorators import login_required
+from .forms import UserForm, UserProfileForm
+from django.views.decorators.http import require_http_methods
+from django.db import transaction
+from django.contrib.auth.decorators import user_passes_test
 
 def register_view(request):
     if request.method == 'POST':
@@ -66,9 +77,17 @@ def category_view(request, category):
     category_obj = get_object_or_404(Category, slug=category)
     books = Book.objects.filter(category=category_obj)
 
+    # Для каждого книги получить текущий рейтинг пользователя
+    book_ratings = {}
+    for book in books:
+        rating_obj = Rating.objects.filter(user=request.user, book=book).first()
+        book_ratings[book.id] = rating_obj.rating if rating_obj else 0
+
     context = {
+        'user_ratings': book_ratings,
         'category_name': category_name,
         'books': books,
+        'book_ratings': book_ratings,  # Передаем словарь с рейтингами
     }
     return render(request, template_name, context)
 
@@ -94,7 +113,6 @@ def cart_view(request):
     total_price = 0
 
     for book_id_str, quantity in cart.items():
-        # Обратите внимание, что ключи могут быть строками, а не целыми числами
         try:
             book_id = int(book_id_str)
             book = Book.objects.get(id=book_id)
@@ -128,3 +146,149 @@ def remove_from_cart(request, book_id):
         request.session['cart'] = cart
 
     return redirect('cart')  # Перенаправление обратно в корзину
+
+@login_required
+@require_POST
+def rate_book(request, book_id):
+    data = json.loads(request.body)
+    rating_value = int(data.get('rating', 0))
+    if not (1 <= rating_value <= 5):
+        return JsonResponse({'error': 'Invalid rating'}, status=400)
+
+    book = get_object_or_404(Book, id=book_id)
+
+    try:
+        with transaction.atomic():
+            # Обновляем или создаем оценку внутри транзакции
+            rating_obj, created = Rating.objects.update_or_create(
+                user=request.user,
+                book=book,
+                defaults={'rating': rating_value}
+            )
+        # Рассчитываем среднюю оценку
+        ratings = Rating.objects.filter(book=book).values_list('rating', flat=True)
+        average = round(sum(ratings) / len(ratings), 1) if ratings else 0
+        return JsonResponse({'average': average})
+    except Exception as e:
+        # Логируем ошибку
+        return JsonResponse({'error': str(e)}, status=500)
+
+@login_required
+def get_average_rating(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    ratings = Rating.objects.filter(book=book).values_list('rating', flat=True)
+    if ratings:
+        avg = round(sum(ratings) / len(ratings), 1)
+    else:
+        avg = 0
+    return JsonResponse({'average': avg})
+
+@login_required
+def profile(request):
+    user = request.user
+    try:
+        userprofile = user.userprofile
+    except UserProfile.DoesNotExist:
+        userprofile = None
+
+    # Словарь статусов
+    statuses = {
+        'user': 'Пользователь',
+        'moderator': 'Модератор',
+        'admin': 'Админ'
+    }
+
+    context = {
+        'user': user,
+        'userprofile': userprofile,
+        'statuses': statuses,
+    }
+
+    return render(request, 'profile.html', context)
+
+@login_required
+def profile_edit(request):
+    user = request.user
+    profile, created = UserProfile.objects.get_or_create(user=user)
+
+    if request.method == 'POST':
+        user_form = UserForm(request.POST, instance=user)
+        profile_form = UserProfileForm(request.POST, request.FILES, instance=profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            return redirect('profile')
+    else:
+        user_form = UserForm(instance=user)
+        profile_form = UserProfileForm(instance=profile)
+
+    return render(request, 'profile_edit.html', {
+        'user_form': user_form,
+        'profile_form': profile_form
+    })
+
+@login_required
+@require_http_methods(["DELETE"])
+def delete_rating(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    try:
+        rating = Rating.objects.get(user=request.user, book=book)
+        rating.delete()
+        ratings = Rating.objects.filter(book=book).values_list('rating', flat=True)
+        average = round(sum(ratings) / len(ratings), 1) if ratings else 0
+        return JsonResponse({'success': True, 'average': average})
+    except Rating.DoesNotExist:
+        return JsonResponse({'error': 'Rating not found'}, status=404)
+    
+def add_comment_view(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    if request.method == 'POST':
+        comment_text = request.POST.get('comment')
+        if comment_text:
+            Comment.objects.create(book=book, content=comment_text, user=request.user)
+            return redirect('book_detail', pk=book.id)
+    return render(request, 'add_comment.html', {'book': book})
+
+@login_required
+def book_detail(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+    
+    # Получение всех книг (или только выбранной книги)
+    books = Book.objects.all()
+
+    # Создание словаря с рейтингами пользователя
+    user_ratings = {}
+    for bk in books:
+        try:
+            rating_obj = Rating.objects.get(user=request.user, book=bk)
+            user_ratings[str(bk.id)] = rating_obj.rating
+        except Rating.DoesNotExist:
+            user_ratings[str(bk.id)] = 0
+
+    # Передача контекста в шаблон
+    context = {
+        'book': book,
+        'user_ratings': user_ratings,
+    }
+    return render(request, 'main/book_detail.html', context)
+
+@login_required
+def delete_comment(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    if request.method == 'POST':
+        is_moderator = request.user.groups.filter(name='Модератор').exists()
+        if comment.user == request.user or request.user.is_superuser or is_moderator:
+            comment.delete()
+    return redirect(request.META.get('HTTP_REFERER', '/'))
+
+@user_passes_test(lambda u: u.is_superuser)
+@login_required
+def delete_book(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+    if request.method == 'POST':
+        book.delete()
+        return redirect('catalog')
+    return render(request, 'main/confirm_delete.html', {'book': book})
+
+def about(request):
+    return render(request, 'about.html')
