@@ -10,6 +10,7 @@
 
 
 ## Как запустить:
-1. Установите зависимости: `pip install -r requirements.txt`;
-2. Создайте и активируйте виртуальное окружение.
-3. Запустите сервер: `python manage.py runserver`
+1. Клонируйте репозиторий:`https://github.com/Dmitri1238/Web`
+2. Установите зависимости: `pip install -r requirements.txt`; `pip install pillow`
+3. Создайте и активируйте виртуальное окружение.
+4. Запустите сервер: `python manage.py runserver`
