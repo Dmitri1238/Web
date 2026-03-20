@@ -11,6 +11,5 @@
 
 ## Как запустить:
 1. Клонируйте репозиторий:`https://github.com/Dmitri1238/Web`
-2. Установите зависимости: `pip install -r requirements.txt`; `pip install pillow`
-3. Создайте и активируйте виртуальное окружение.
-4. Запустите сервер: `python manage.py runserver`
+2. Перейти: `cd Web`
+3. Запустите сервер: `python manage.py runserver`
