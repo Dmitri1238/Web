@@ -1,22 +1,13 @@
 <!-- main/prose.html -->
 {% load static %}
+{% load utils %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
     <title>Проза</title>
     <link rel="stylesheet" href="{% static 'css/auth.css' %}">
-    <link rel="stylesheet" href="{% static 'css/book.css' %}">
-    <style>
-    .books-container {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 10px;
-        margin-top: 80px;
-        padding: 10px;
-        box-sizing: border-box;
-    }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/books.css' %}">
 </head>
 <body>
 
@@ -28,8 +19,12 @@
                 <li><a href="/">Главная</a></li>
                 <li><a href="/catalog/">Каталог</a></li>
                 <li><a href="/courses/">Курсы</a></li>
+                <li><a href="/about/">О нас</a></li>
             </ul>
         </nav>
+        <div class="cart-info">
+            <a href="/cart/">В корзине: <span id="cart-count">{{ request.session.cart|sum_dict_values }}</span> товаров</a>
+        </div>
     </div>
 </header>
 

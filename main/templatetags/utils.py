@@ -5,7 +5,7 @@ register = template.Library()
 
 @register.filter
 def get_item(dictionary, key):
-    return dictionary.get(key)
+    return dictionary.get(key, 0)
 
 @register.filter
 def to(value, arg):
@@ -22,3 +22,9 @@ def is_moderator(user):
     if user.is_authenticated:
         return user.groups.filter(name='Модератор').exists()
     return False
+
+@register.filter
+def sum_dict_values(d):
+    if not isinstance(d, dict):
+        return 0
+    return sum(d.values())

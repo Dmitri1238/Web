@@ -64,6 +64,79 @@ a:hover {
     text-decoration: underline;
 }
 
-/* ====================
-   Навигация горизонтально
-   ==================== */
+/* --- Навигация и общие элементы страницы --- */
+
+body {
+    display: flex;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header {
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between; /* Размещение элементов по краям */
+    align-items: center;
+    flex-wrap: wrap; /* Адаптация на мобильных */
+}
+
+/* Стили для навигации */
+nav {
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #007bff !important; /* добавим фон для навигации для контраста */
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 15px;
+}
+
+nav li {
+    display: inline;
+}
+
+nav a {
+    color: white; /* контрастный белый цвет для текста навигации */
+    font-weight: bold;
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+nav a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    text-decoration: underline;
+}
+/* Новая стилизация для ссылки "В корзине" */
+.cart-info a {
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #72aaeb, #9222fa);
+    color: white;
+    font-weight: bold;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+    display: inline-block;
+    font-size: 14px;
+}
+
+.cart-info a:hover {
+    background: linear-gradient(135deg, #8b32ff, #f032c0);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+    transform: translateY(-2px);
+}
+

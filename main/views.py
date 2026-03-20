@@ -19,6 +19,7 @@ from .forms import UserForm, UserProfileForm
 from django.views.decorators.http import require_http_methods
 from django.db import transaction
 from django.contrib.auth.decorators import user_passes_test
+import random
 
 def register_view(request):
     if request.method == 'POST':
@@ -56,12 +57,23 @@ def home(request):
     for cat in categories:
         counts[cat.slug] = Book.objects.filter(category=cat).count()
 
+    # Выбираем 10 случайных книг
+    books = Book.objects.order_by('?')[:10]
+
+    # Собираем рейтинг пользователя для этих книг
+    book_ratings = {}
+    for book in books:
+        rating_obj = Rating.objects.filter(user=request.user, book=book).first()
+        book_ratings[book.id] = rating_obj.rating if rating_obj else 0
+
     return render(request, 'home.html', {
         'categories': categories,
         'count_literature': counts.get('literature', 0),
         'count_prose': counts.get('prose', 0),
         'count_comics': counts.get('comics', 0),
         'count_fairy_tales': counts.get('fairy_tales', 0),
+        'books': books,
+        'user_ratings': book_ratings,
     })
 
 @login_required
@@ -93,18 +105,30 @@ def category_view(request, category):
 
 @login_required
 def catalog_view(request):
+    categories = Category.objects.all()
     books = Book.objects.all()
-    return render(request, 'main/catalog.html', {'books': books})
+
+    # Собираем рейтинги пользователя по всем книгам (если нужно)
+    book_ratings = {}
+    for book in books:
+        rating_obj = Rating.objects.filter(user=request.user, book=book).first()
+        book_ratings[book.id] = rating_obj.rating if rating_obj else 0
+
+    context = {
+        'books': books,
+        'categories': categories,
+        'user_ratings': book_ratings,
+    }
+    return render(request, 'main/catalog.html', context)
 
 @login_required
 def add_to_cart(request, book_id):
-    if request.method == 'POST':
-        cart = request.session.get('cart', {})
-        book_id_str = str(book_id)
-        cart[book_id_str] = cart.get(book_id_str, 0) + 1
-        request.session['cart'] = cart
-        return redirect(request.META.get('HTTP_REFERER', '/'))
-    
+    cart = request.session.get('cart', {})
+    book_id_str = str(book_id)
+    cart[book_id_str] = cart.get(book_id_str, 0) + 1
+    request.session['cart'] = cart
+    return JsonResponse({'success': True, 'message': 'Книга добавлена в корзину', 'cart_count': sum(cart.values())})
+
 @login_required
 def cart_view(request):
     cart = request.session.get('cart', {})
@@ -239,7 +263,7 @@ def delete_rating(request, book_id):
         return JsonResponse({'success': True, 'average': average})
     except Rating.DoesNotExist:
         return JsonResponse({'error': 'Rating not found'}, status=404)
-    
+@login_required
 def add_comment_view(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     if request.method == 'POST':
@@ -290,5 +314,15 @@ def delete_book(request, pk):
         return redirect('catalog')
     return render(request, 'main/confirm_delete.html', {'book': book})
 
+@login_required
 def about(request):
     return render(request, 'about.html')
+
+@login_required
+def courses(request):
+    return render(request, 'courses.html')
+
+@login_required
+def confirmation(request):
+    course_name = request.GET.get('course', 'неизвестный курс')
+    return render(request, 'confirmation.html', {'course_name': course_name})

@@ -1,13 +1,40 @@
-
-
 {% block content %}
-<h2>Все категории</h2>
+{% load utils %}
 
-<ul>
-    {% for category in categories %}
-        <li><a href="{% url 'category' category.slug %}">{{ category.name }}</a></li>
-    {% endfor %}
-</ul>
+<h2 style="margin-bottom: 0.5em;">Все категории</h2>
 
-<h3>или просмотреть книги в категории</h3>
+{% if categories %}
+    <ul style="list-style-type: none; padding-left: 0; display: flex; flex-wrap: wrap; gap: 1em;">
+        {% for category in categories %}
+            <li>
+                <a href="{% url 'category' category.slug %}" style="text-decoration: none; color: #2c7ae0; font-weight: 600;">
+                    {{ category.name }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p><em>Категории не найдены</em></p>
+{% endif %}
+
+<hr style="margin: 2em 0; border-color: #ccc;">
+
+<h3 style="margin-bottom: 0.5em;">Книги в каталоге</h3>
+
+{% if books %}
+    <ul style="list-style-type: none; padding-left: 0;">
+        {% for book in books %}
+            <li style="margin-bottom: 1.2em; padding-bottom: 0.8em; border-bottom: 1px solid #eee;">
+                <strong style="font-size: 1.1em;">{{ book.title }}</strong><br>
+                <span style="color: #555;">Автор: {{ book.author }}</span><br>
+                <span style="color: #888; font-style: italic;">
+                    Рейтинг пользователя: {{ user_ratings|get_item:book.id|default:"0" }}
+                </span>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p><em>Книги не найдены.</em></p>
+{% endif %}
+
 {% endblock %}

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Курсы – Мой книжный магазин</title>
+    <link rel="stylesheet" href="/static/css/auth.css" />
+    <style>
+        main {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+            font-family: Arial, sans-serif;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .course-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .course-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+        }
+        .course-title {
+            font-size: 18px;
+            color: #007bff;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .course-description {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+        .btn-enroll {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #5c7cfa;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        .btn-enroll:hover {
+            background-color: #4668dd;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-top">
+        <h1>Мой книжный магазин</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Главная</a></li>
+                <li><a href="/catalog/">Каталог</a></li>
+                <li><a href="/courses">Курсы</a></li>
+            </ul>
+        </nav>
+        <div class="cart-info">
+        </div>
+    </div>
+</header>
+
+<main>
+    <h2>Наши курсы</h2>
+    <div class="course-list">
+        <div class="course-card">
+            <div class="course-title">Курс по современному роману</div>
+            <div class="course-description">Узнайте, как анализировать и писать современные романы с профессионалами.</div>
+            <a href="/confirmation/?course=Курс+по+современному+роману" class="btn-enroll">Записаться</a>
+        </div>
+        <div class="course-card">
+            <div class="course-title">Литературное мастерство для начинающих</div>
+            <div class="course-description">Основы сторителлинга и написания выразительных текстов для всех.</div>
+            <a href="/confirmation/?course=Литературное+мастерство+для+начинающих" class="btn-enroll">Записаться</a>
+        </div>
+        <div class="course-card">
+            <div class="course-title">История мировой литературы</div>
+            <div class="course-description">Погрузитесь в эпохи и направления литературного развития от античности до современности.</div>
+            <a href="/confirmation/?course=История+мировой+литературы" class="btn-enroll">Записаться</a>
+        </div>
+        <div class="course-card">
+            <div class="course-title">Поэзия и её мастерство</div>
+            <div class="course-description">Изучите поэтические формы и техники от классики до современности.</div>
+            <a href="/confirmation/?course=Поэзия+и+её+мастерство" class="btn-enroll">Записаться</a>
+        </div>
+        <div class="course-card">
+            <div class="course-title">Писательский интенсив</div>
+            <div class="course-description">Практические занятия по развитию писательских навыков и креативности.</div>
+            <a href="/confirmation/?course=Писательский+интенсив" class="btn-enroll">Записаться</a>
+        </div>
+        <div class="course-card">
+            <div class="course-title">Литература и кино</div>
+            <div class="course-description">Как адаптировать литературные произведения для экрана и анализировать кино.</div>
+            <a href="/confirmation/?course=Литература+и+кино" class="btn-enroll">Записаться</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

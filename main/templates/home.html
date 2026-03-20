@@ -1,69 +1,24 @@
 <!--home.html-->
 {% load static %}
+{% load utils %}
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
     <title>Книжный магазин</title>
     <link rel="icon" href="{% static 'img/logo(1).svg' %}" type="image/svg+xml" />
+    <link rel="stylesheet" type="text/css" href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" href="{% static 'css/books.css' %}">
     <style>
         /* Простое оформление */
-
-        body {
-            display: flex;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-        header {
-            width: 100%;
-            background-color: #007bff;
-            color: white;
-            padding: 10px;
-            display: flex;
-            justify-content: space-between; /* Чтобы разместить навигацию и корзину по краям */
-            align-items: center;
-            flex-wrap: wrap; /* Чтобы лучше адаптироваться на мобильных */
-        }
 
         header h1 {
             margin: 0;
         }
 
-        nav {
-            margin-top: 10px;
-        }
-
-        nav a {
-            color: white;
-            margin-right: 15px;
-            text-decoration: none;
-        }
-
         /* Блок информации о корзине */
         .cart-info {
             margin-left: 20px;
-        }
-
-        /* Новая стилизация для ссылки "В корзине" */
-        .cart-info a {
-            padding: 8px 16px;
-            background: linear-gradient(135deg, #72aaeb, #9222fa);
-            color: white;
-            font-weight: bold;
-            border-radius: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
-            display: inline-block;
-            font-size: 14px;
-        }
-
-        .cart-info a:hover {
-            background: linear-gradient(135deg, #8b32ff, #f032c0);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-            transform: translateY(-2px);
         }
 
         /* Ленточка с баннером */
@@ -129,30 +84,8 @@
             padding: 15px;
         }
 
-        /* Книги */
-        .book {
-            border-bottom: 1px solid #ccc;
-            padding: 10px 0;
-        }
-
         /* Стиль для кнопки 'Добавить в корзину' */
         /* Этот блок — добавил в конец вашего existing CSS */
-        button[type="submit"] {
-            background-color: #28a745; /* зеленый */
-            padding: 8px 15px;
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        button[type="submit"]:hover {
-            background-color: #218838;
-            transform: scale(1.05);
-        }
 
         /* Футер */
         footer {
@@ -241,6 +174,7 @@
             <a href="/">Главная</a>
             <a href="/catalog/">Каталог</a>
             <a href="/about/">О нас</a>
+            <a href="/courses">Курсы</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'logout' %}">Выйти</a>
             {% else %}
@@ -251,14 +185,14 @@
 
         <!-- Блок с информацией о корзине -->
         <div class="cart-info">
-            <a href="/cart/">В корзине: {{ request.session.cart|length }} товаров</a>
+            <a href="/cart/">В корзине: <span id="cart-count">{{ request.session.cart|sum_dict_values }}</span> товаров</a>
         </div>
     </header>
 
     <!-- Баннер -->
     <section id="banner">
         <h2>Акции и скидки на книги!</h2>
-        <img src="/static/banner.jpg" alt="Акции" />
+        <!--<img src="/static/banner.jpg" alt="Акции" />-->
     </section>
 
     <!-- Основной раздел: слева — навигация по категориям, справа — контент -->
@@ -279,17 +213,24 @@
 
             <!-- Основной контент -->
             <section id="catalog">
-                <h3>Добро пожаловать в наш магазин! Выберите категорию.</h3>
-                <p>Здесь можно просматривать книги, узнавать о новинках и спецпредложениях.</p>
+                <h3>Добро пожаловать в наш магазин! Выберите книгу.</h3>
+                <div class="books-container">
+                    {% for book in books %}
+                        {% include 'main/book_card.html' with book=book %}
+                    {% empty %}
+                        <p>Книг пока нет.</p>
+                    {% endfor %}
+                </div>
+
             </section>
         </div>
     </div>
 
     <!-- Футер -->
     <footer>
-        <p>Контакты: телефон, email</p>
-        <p>Социальные сети: ...</p>
-        <p>&copy; 2026 Мой магазин</p>
+        <p>Контакты: телефон: 89281662055</p>
+        <p>email: 0programme0@gmail.com</p>
+        <p>&copy; 2026 Книжный магазин</p>
     </footer>
 </body>
 </html>

@@ -34,7 +34,7 @@
     <!-- Пространство между кнопками -->
     <div style="margin-top: 15px;">
         <!-- Форма для добавления в корзину -->
-        <form method="post" action="{% url 'add_to_cart' book.id %}">
+        <form method="post" action="{% url 'add_to_cart' book.id %}" class="add-to-cart-form">
             {% csrf_token %}
             <button type="submit" class="add-to-cart">Добавить в корзину</button>
         </form>
@@ -50,35 +50,36 @@
 <style>
 /* Стиль звезд (белые внутри по умолчанию) */
 .stars {
-  display: inline-block;
-  font-size: 24px;
-  cursor: pointer;
-  user-select: none;
-  background: transparent;
-  line-height: 1;
+    display: inline-block;
+    font-size: 24px;
+    cursor: pointer;
+    user-select: none;
+    background: transparent;
+    line-height: 1;
 }
 
 .star {
-  display: inline-block;
-  width: 24px;
-  height: 24px;
-  background-color: transparent; /* прозрачное внутри */
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9" /></svg>');
-  background-size: contain;
-  background-repeat: no-repeat;
-  transition: background-image 0.3s, color 0.3s;
-  color: white; /* внутри звезд - белый по умолчанию */
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background-color: transparent; /* прозрачное внутри */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9" /></svg>');
+    background-size: contain;
+    background-repeat: no-repeat;
+    transition: background-image 0.3s, color 0.3s;
+    color: white; /* внутри звезд - белый по умолчанию */
 }
 
 .star.filled {
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="orange"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9" /></svg>');
-  color: orange; /* при выборе тоже можно менять цвет */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="orange"><polygon points="12,2 15,9 22,9 17,14 19,21 12,17 5,21 7,14 2,9 9,9" /></svg>');
+    color: orange; /* при выборе тоже можно менять цвет */
 }
 </style>
 
 <!-- Скрипт -->
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // --- СУЩЕСТВУЮЩИЙ КОД РЕЙТИНГА ---
     document.querySelectorAll('.rating').forEach(ratingDiv => {
         const bookId = ratingDiv.dataset.bookId;
         let userRating = parseInt(ratingDiv.dataset.userRating || '0'); // получаем из html
@@ -90,26 +91,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let currentRating = 0;
 
-        // Если есть уже оценка пользователя
         if (userRating > 0) {
             currentRating = userRating;
             setStars(ratingDiv, currentRating);
-            // Показываем что оценка поставлена
             fixedBtn.style.display = 'inline-block';
             rateBtn.style.display = 'none';
-
-            // Отключаем звездочки
             starsContainer.querySelectorAll('.star').forEach(star => {
                 star.style.pointerEvents = 'none';
             });
         } else {
-            // Нет оценки, активируем звезды
             starsContainer.querySelectorAll('.star').forEach(star => {
                 star.style.pointerEvents = 'auto';
             });
         }
 
-        // Получить средний рейтинг с сервера
         fetch(`/api/book/${bookId}/average/`)
             .then(res => res.json())
             .then(data => {
@@ -118,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 avgScoreSpan.textContent = avg.toFixed(1);
             });
 
-        // Обработка кликов по звездам
         starsContainer.querySelectorAll('.star').forEach(star => {
             star.addEventListener('click', () => {
                 if (currentRating === 0 && fixedBtn.style.display === 'none') {
@@ -126,10 +120,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     setStars(ratingDiv, currentRating);
                 }
             });
-        });
-
-        // Наведение мыши на звезды
-        starsContainer.querySelectorAll('.star').forEach(star => {
             star.addEventListener('mouseover', () => {
                 const value = parseInt(star.dataset.value);
                 setHoverStars(ratingDiv, value);
@@ -139,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Обработка "Поставить оценку"
         rateBtn.addEventListener('click', () => {
             if (currentRating === 0) {
                 errorMsg.style.display = 'block';
@@ -161,15 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!data.error) {
                     setStars(ratingDiv, data.average);
                     avgScoreSpan.textContent = data.average.toFixed(1);
-                    
-                    // Обновляем атрибут data-user-rating
                     ratingDiv.dataset.userRating = currentRating;
-
-                    // Показываем "Оценка поставлена" и блокируем звезды
                     fixedBtn.style.display = 'inline-block';
                     rateBtn.style.display = 'none';
-
-                    // Блокируем клики по звездам
                     starsContainer.querySelectorAll('.star').forEach(star => {
                         star.style.pointerEvents = 'none';
                     });
@@ -177,7 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
-        // Функции для установки звезд
         function setStars(ratingDiv, rating) {
             ratingDiv.querySelectorAll('.star').forEach(star => {
                 if (parseInt(star.dataset.value) <= Math.round(rating)) {
@@ -188,7 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Новая функция для подсветки при наведении
         function setHoverStars(ratingDiv, hoverRating) {
             ratingDiv.querySelectorAll('.star').forEach(star => {
                 const starVal = parseInt(star.dataset.value);
@@ -199,6 +180,57 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         }
+    });
+
+    // --- НОВЫЙ КОД ДЛЯ FORM "ДОБАВИТЬ В КОРЗИНУ" ---
+    const addToCartForms = document.querySelectorAll('.add-to-cart-form');
+
+    // Функция для получения CSRF токена из cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    addToCartForms.forEach(form => {
+        form.addEventListener('submit', event => {
+            event.preventDefault(); // отменяем стандартную отправку формы
+            const url = form.action;
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                },
+                body: new FormData(form)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Дополнительно можно обновить счетчик корзины, если есть на странице:
+                    const cartCounter = document.querySelector('#cart-count');
+                    if (cartCounter && data.cart_count !== undefined) {
+                        cartCounter.textContent = data.cart_count;
+                    }
+                } else {
+                    alert('Ошибка при добавлении в корзину');
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Ошибка запроса');
+            });
+        });
     });
 });
 </script>
