@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/manage.py",
-      "use": "@vercel/python",
-      "config": { "maxLambdaSize": "10mb" }
+  "functions": {
+    "api/manage.py": {
+      "runtime": "python3.9", 
+      "maxDuration": 10,
+      "memory": 1024
     }
-  ],
+  },
   "routes": [
     {
       "src": "/(.*)",
