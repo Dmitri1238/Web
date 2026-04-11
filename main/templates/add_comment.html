@@ -134,9 +134,8 @@
     <ul>
         <li><a href="/">Главная</a></li>
         <li><a href="/catalog/">Каталог</a></li>
-        <li><a href="/courses/">Курсы</a></li>
         <li><a href="/about/">О нас</a></li>
-        <li><a href="/contacts/">Контакты</a></li>
+        <li><a href="/courses/">Курсы</a></li>
         {% if user.is_authenticated %}
             <li><a href="{% url 'logout' %}">Выйти</a></li>
         {% else %}

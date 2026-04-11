@@ -57,3 +57,12 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'Comment by {self.user.username} on {self.book.title}'
+    
+class CourseRegistration(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course_name = models.CharField(max_length=200)
+    time = models.CharField(max_length=10)  # Хранит вроде '14:30'
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.course_name} at {self.time}'

@@ -1,0 +1,149 @@
+<!-- templates/course_video.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Курс: {{ course_name }}</title>
+<link rel="stylesheet" href="/static/css/aut.css" />
+<style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+    #videoContainer { display: none; position: relative; width: 80%; margin: 20px auto; }
+    #fakeVideo { width: 100%; height: 400px; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    #notification { margin-top: 20px; font-weight: bold; }
+    #videoButton { margin-top: 10px; padding: 10px 20px; font-size: 16px; }
+</style>
+</head>
+<header>
+    <div class="header-top">
+        <h1>Мой книжный магазин</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Главная</a></li>
+                <li><a href="/catalog/">Каталог</a></li>
+                <li><a href="/courses">Курсы</a></li>
+            </ul>
+        </nav>
+        <div class="cart-info"></div>
+    </div>
+</header>
+<body>
+
+<h2>Курс: {{ course_name }}</h2>
+
+<div id="videoContainer">
+    <div id="fakeVideo">🚀 Видео курса ― тут будет видео 🎬</div>
+    <button id="videoButton" onclick="toggleVideo()">Смотреть курс</button>
+</div>
+
+<div id="notification"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const startTimeStr = localStorage.getItem('course_time') || "{{ course_time_start|escapejs }}"; // например, "23:00"
+    const durationHours = 2; // длительность интервала, измените по необходимости
+    let isVideoPlaying = false;
+    let canShowButton = false;
+    console.log('startTimeStr:', startTimeStr);
+    
+
+    const viewButton = document.getElementById('videoButton');
+    const notificationElem = document.getElementById('notification');
+    const videoContainer = document.getElementById('videoContainer');
+    const fakeVideo = document.getElementById('fakeVideo');
+
+    function checkTime() {
+        const now = new Date();
+        const [sh, sm] = startTimeStr.split(':').map(Number);
+        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), sh, sm);
+        const end = new Date(start.getTime() + durationHours * 60 * 60 * 1000);
+
+        console.log('Текущая дата:', now);
+        console.log('Время начала:', start);
+        console.log('Время окончания:', end);
+
+        if (now < start) {
+            notificationElem.textContent = 'Этот курс еще не начался.';
+            videoContainer.style.display = 'none';
+            if (viewButton) viewButton.style.display = 'none';
+            canShowButton = false;
+            console.log('Пока впереди — скрываем кнопку и видео');
+            return;
+        } else if (now >= end) {
+            notificationElem.textContent = 'Этот курс уже прошел.';
+            videoContainer.style.display = 'none';
+            if (viewButton) viewButton.style.display = 'none';
+            canShowButton = false;
+            console.log('Закончился — скрываем кнопку и видео');
+            return;
+        } else {
+            // В интервале
+            notificationElem.textContent = '';
+            videoContainer.style.display = 'block';
+
+            const storedTime = localStorage.getItem('videoStartTime');
+            if (storedTime) {
+                const startTS = parseInt(storedTime);
+                const elapsed = now.getTime() - startTS;
+                if (elapsed > durationHours * 60 * 60 * 1000) {
+                    alert('Время доступа истекло');
+                    localStorage.removeItem('videoStartTime');
+                    isVideoPlaying = false;
+                    fakeVideo.textContent = '🚀 Видео курса ― тут будет видео 🎬';
+                    if (viewButton) viewButton.style.display = 'none';
+                    canShowButton = false;
+                    console.log('Время истекло — скрываем кнопку');
+                    return;
+                }
+            }
+            if (viewButton) viewButton.style.display = 'inline-block';
+            canShowButton = true;
+            console.log('Показать кнопку');
+        }
+    }
+
+    function toggleVideo() {
+        if (!canShowButton) {
+            console.log('Кнопка не должна быть активной, вход запрещен');
+            return;
+        }
+
+        const now = new Date();
+        let storedTime = localStorage.getItem('videoStartTime');
+
+        if (!storedTime) {
+            localStorage.setItem('videoStartTime', now.getTime().toString());
+            storedTime = now.getTime().toString();
+            console.log('Устанавливаем время начала просмотра:', storedTime);
+        } else {
+            const startTS = parseInt(storedTime);
+            const elapsed = now.getTime() - startTS;
+            if (elapsed > durationHours * 60 * 60 * 1000) {
+                alert('Время доступа истекло');
+                localStorage.removeItem('videoStartTime');
+                return;
+            }
+        }
+
+        // Переключение состояния видео
+        isVideoPlaying = !isVideoPlaying;
+        if (isVideoPlaying) {
+            fakeVideo.textContent = '🎬 Видеоурок идет ...';
+        } else {
+            fakeVideo.textContent = '🚀 Видео курса ― тут будет видео 🎬';
+        }
+    }
+
+    // Проверяем время при загрузке
+    checkTime();
+
+    // Обновляем каждые 5 минут
+    setInterval(checkTime, 5 * 60 * 1000);
+
+    // Выделяем функцию "в глобальную область" чтобы кнопка могла вызывать
+    window.toggleVideo = toggleVideo;
+});
+</script>
+
+</body>
+</html>

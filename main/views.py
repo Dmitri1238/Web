@@ -20,6 +20,10 @@ from django.views.decorators.http import require_http_methods
 from django.db import transaction
 from django.contrib.auth.decorators import user_passes_test
 import random
+from django.core.paginator import Paginator
+from .models import CourseRegistration
+from datetime import datetime
+from django.views.decorators.http import require_GET
 
 def register_view(request):
     if request.method == 'POST':
@@ -51,18 +55,25 @@ def logout_view(request):
 
 @login_required
 def home(request):
+    # тут ваш существующий код
     categories = Category.objects.all()
 
     counts = {}
     for cat in categories:
         counts[cat.slug] = Book.objects.filter(category=cat).count()
 
-    # Выбираем 10 случайных книг
-    books = Book.objects.order_by('?')[:10]
+    page_number = request.GET.get('page', 1)
+    all_books = Book.objects.all()
 
-    # Собираем рейтинг пользователя для этих книг
+    paginator = Paginator(all_books, 10)
+
+    try:
+        page_obj = paginator.get_page(page_number)
+    except:
+        page_obj = paginator.get_page(1)
+
     book_ratings = {}
-    for book in books:
+    for book in page_obj.object_list:
         rating_obj = Rating.objects.filter(user=request.user, book=book).first()
         book_ratings[book.id] = rating_obj.rating if rating_obj else 0
 
@@ -72,8 +83,10 @@ def home(request):
         'count_prose': counts.get('prose', 0),
         'count_comics': counts.get('comics', 0),
         'count_fairy_tales': counts.get('fairy_tales', 0),
-        'books': books,
+        'books': page_obj,
         'user_ratings': book_ratings,
+        'paginator': paginator,
+        'page_obj': page_obj,
     })
 
 @login_required
@@ -320,9 +333,68 @@ def about(request):
 
 @login_required
 def courses(request):
-    return render(request, 'courses.html')
+    registrations = CourseRegistration.objects.filter(user=request.user)
+    return render(request, 'courses.html', {'registrations': registrations})
 
 @login_required
-def confirmation(request):
-    course_name = request.GET.get('course', 'неизвестный курс')
-    return render(request, 'confirmation.html', {'course_name': course_name})
+@require_POST
+def delete_registration(request, reg_id):
+    try:
+        reg = CourseRegistration.objects.get(id=reg_id, user=request.user)
+        reg.delete()
+        return JsonResponse({'status': 'ok'})
+    except CourseRegistration.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Registration not found'})
+
+@require_GET
+@login_required
+def get_registrations(request):
+    registrations = CourseRegistration.objects.filter(user=request.user)
+    data = []
+    for reg in registrations:
+        data.append({
+            'id': reg.id,
+            'course': reg.course_name,
+            'date': reg.date_created.strftime('%d-%m-%Y'),
+            'time': reg.time if reg.time else '',  # просто возвращать строку
+        })
+    return JsonResponse(data, safe=False)
+
+@require_POST
+@login_required
+def save_registration(request):
+    try:
+        data = json.loads(request.body)
+        course_name = data.get('course')
+        time_str = data.get('time')  # например '14:30'
+    except json.JSONDecodeError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+
+    if not course_name or not time_str:
+        return JsonResponse({'status': 'error', 'message': 'Missing parameters'}, status=400)
+
+    # Парсим строку времени
+    try:
+        time_obj = datetime.strptime(time_str, '%H:%M').time()
+    except ValueError:
+        return JsonResponse({'status': 'error', 'message': 'Invalid time format'}, status=400)
+
+    reg, created = CourseRegistration.objects.get_or_create(
+        user=request.user,
+        course_name=course_name,
+        defaults={'time': time_obj}
+    )
+
+    if not created:
+        reg.time = time_obj
+        reg.save()
+
+    return JsonResponse({'status': 'ok'})
+
+@login_required
+def course_video(request, course_name):
+    # Определите, как искать курс. Пока ищем по имени
+    registration = get_object_or_404(CourseRegistration, user=request.user, course_name=course_name)
+    
+    # Имя курса можно показать в шаблоне или передать дополнительные данные
+    return render(request, 'course_video.html', {'course_name': course_name})

@@ -7,7 +7,7 @@
     <meta charset="UTF-8" />
     <title>Книжный магазин</title>
     <link rel="icon" href="{% static 'img/logo(1).svg' %}" type="image/svg+xml" />
-    <link rel="stylesheet" type="text/css" href="{% static 'css/auth.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/aut.css' %}">
     <link rel="stylesheet" href="{% static 'css/books.css' %}">
     <style>
         /* Простое оформление */
@@ -147,90 +147,169 @@
 </head>
 
 <body>
-    <!-- Добавим сверху — блок профиля -->
-    <div style="display: flex; align-items: center; padding: 10px;">
-        {% if user.is_authenticated %}
-            <a href="{% url 'profile' %}" class="profile-link">
-                <div class="profile-icon">
-                    {% if user.userprofile.avatar %}
-                        <img src="{{ user.userprofile.avatar.url }}" alt="Аватар" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-                    {% else %}
-                        {{ user.first_name|default:user.username|slice:":1"|upper }}
-                    {% endif %}
-                </div>
-                <span class="profile-name">{{ user.first_name|default:user.username }}</span>
-            </a>
-        {% endif %}
+<!-- Добавим сверху — блок профиля -->
+<div style="display: flex; align-items: center; padding: 10px;">
+    {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}" class="profile-link">
+            <div class="profile-icon">
+                {% if user.userprofile.avatar %}
+                    <img src="{{ user.userprofile.avatar.url }}" alt="Аватар" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                    {{ user.first_name|default:user.username|slice:":1"|upper }}
+                {% endif %}
+            </div>
+            <span class="profile-name">{{ user.first_name|default:user.username }}</span>
+        </a>
+    {% endif %}
 </div>
-    <!-- Заголовок и навигация -->
-    <header>
-        <div class="logo-title">
-            <img src="{% static 'img/logo(1).svg' %}" alt="Логотип" class="header-logo" />
-            <h1>Книжный магазин</h1>
-        </div>
-
-        <!-- Навигация -->
-        <nav>
-            <a href="/">Главная</a>
-            <a href="/catalog/">Каталог</a>
-            <a href="/about/">О нас</a>
-            <a href="/courses">Курсы</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'logout' %}">Выйти</a>
-            {% else %}
-                <a href="{% url 'login' %}">Войти</a>
-                <a href="{% url 'register' %}">Регистрация</a>
-            {% endif %}
-        </nav>
-
-        <!-- Блок с информацией о корзине -->
-        <div class="cart-info">
-            <a href="/cart/">В корзине: <span id="cart-count">{{ request.session.cart|sum_dict_values }}</span> товаров</a>
-        </div>
-    </header>
-
-    <!-- Баннер -->
-    <section id="banner">
-        <h2>Акции и скидки на книги!</h2>
-        <!--<img src="/static/banner.jpg" alt="Акции" />-->
-    </section>
-
-    <!-- Основной раздел: слева — навигация по категориям, справа — контент -->
-    <div class="main">
-        <!-- Обертка с прокруткой -->
-        <div id="content-wrapper">
-            <!-- Вертикальная навигация по типам книг -->
-            <aside>
-                <h3>Типы книг</h3>
-                <ul>
-                    <!-- Переменные для подсчета -->
-                    <li><a href="{% url 'category' 'literature' %}">Литература ({{ count_literature }})</a></li>
-                    <li><a href="{% url 'category' 'prose' %}">Проза ({{ count_prose }})</a></li>
-                    <li><a href="{% url 'category' 'comics' %}">Комиксы ({{ count_comics }})</a></li>
-                    <li><a href="{% url 'category' 'fairy_tales' %}">Сказки ({{ count_fairy_tales }})</a></li>
-                </ul>
-            </aside>
-
-            <!-- Основной контент -->
-            <section id="catalog">
-                <h3>Добро пожаловать в наш магазин! Выберите книгу.</h3>
-                <div class="books-container">
-                    {% for book in books %}
-                        {% include 'main/book_card.html' with book=book %}
-                    {% empty %}
-                        <p>Книг пока нет.</p>
-                    {% endfor %}
-                </div>
-
-            </section>
-        </div>
+<!-- Заголовок и навигация -->
+<header>
+    <div class="logo-title">
+        <img src="{% static 'img/logo(1).svg' %}" alt="Логотип" class="header-logo" />
+        <h1>Книжный магазин</h1>
     </div>
 
-    <!-- Футер -->
-    <footer>
-        <p>Контакты: телефон: 89281662055</p>
-        <p>email: 0programme0@gmail.com</p>
-        <p>&copy; 2026 Книжный магазин</p>
-    </footer>
-</body>
-</html>
+    <!-- Навигация -->
+    <nav>
+        <a href="/">Главная</a>
+        <a href="/catalog/">Каталог</a>
+        <a href="/about/">О нас</a>
+        <a href="/courses">Курсы</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'logout' %}">Выйти</a>
+        {% else %}
+            <a href="{% url 'login' %}">Войти</a>
+            <a href="{% url 'register' %}">Регистрация</a>
+        {% endif %}
+    </nav>
+
+    <!-- Блок с информацией о корзине -->
+    <div class="cart-info">
+        <a href="/cart/">В корзине: <span id="cart-count">{{ request.session.cart|sum_dict_values }}</span> товаров</a>
+    </div>
+</header>
+
+<!-- Баннер -->
+<section id="banner">
+    <h2>Акции и скидки на книги!</h2>
+</section>
+
+<!-- Основной раздел: слева — навигация по категориям, справа — контент -->
+<div class="main">
+    <!-- Обертка с прокруткой -->
+    <div id="content-wrapper" style="display:flex;">
+
+        <!-- Вертикальная навигация по типам книг -->
+        <aside style="width: 200px; flex-shrink:0; padding: 10px; border-right: 1px solid #ccc;">
+            <h3>Типы книг</h3>
+            <ul style="list-style: none; padding: 0;">
+                <li><a href="{% url 'category' 'literature' %}">Литература ({{ count_literature }})</a></li>
+                <li><a href="{% url 'category' 'prose' %}">Проза ({{ count_prose }})</a></li>
+                <li><a href="{% url 'category' 'comics' %}">Комиксы ({{ count_comics }})</a></li>
+                <li><a href="{% url 'category' 'fairy_tales' %}">Сказки ({{ count_fairy_tales }})</a></li>
+            </ul>
+        </aside>
+
+        <!-- Основной контент -->
+        <section id="catalog" style="flex:1; padding:20px;">
+            <h3>Добро пожаловать в наш магазин! Выберите книгу.</h3>
+            <!-- Обертка для работы с AJAX -->
+            <div class="books-container" id="books-container">
+                {% for book in books.object_list %}
+                    {% include 'main/book_card.html' with book=book %}
+                {% empty %}
+                    <p>Книг пока нет.</p>
+                {% endfor %}
+            </div>
+
+            <!-- Пагинация, которая будет обновляться -->
+            {% if books.paginator.num_pages > 1 %}
+            <div class="pagination" id="pagination">
+                <ul id="pagination-controls">
+                    {% if books.has_previous %}
+                        <li data-page="1" class="page-btn">&laquo;</li>
+                        <li data-page="{{ books.previous_page_number }}" class="page-btn">&lt;</li>
+                    {% else %}
+                        <li class="disabled">&laquo;</li>
+                        <li class="disabled">&lt;</li>
+                    {% endif %}
+
+                    {% for num in books.paginator.page_range %}
+                        {% if num >= books.number|add:"-3" and num <= books.number|add:"3" %}
+                            {% if num == books.number %}
+                                <li><span class="current-page">{{ num }}</span></li>
+                            {% else %}
+                                <li data-page="{{ num }}" class="page-btn">{{ num }}</li>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if books.has_next %}
+                        <li data-page="{{ books.next_page_number }}" class="page-btn">&gt;</li>
+                        <li data-page="{{ books.paginator.num_pages }}" class="page-btn">&raquo;</li>
+                    {% else %}
+                        <li class="disabled">&gt;</li>
+                        <li class="disabled">&raquo;</li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% endif %}
+        </section>
+    </div>
+</div>
+
+<!-- Добавьте скрипт для AJAX -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const controls = document.querySelectorAll('.page-btn');
+
+    controls.forEach(control => {
+        control.addEventListener('click', () => {
+            const page = control.dataset.page;
+
+            fetch(`?page=${page}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                // парсим ответ и берем только блок #catalog
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newContent = doc.querySelector('#catalog');
+                // заменяем текущий контент книг на новый
+                document.querySelector('#catalog').innerHTML = newContent.innerHTML;
+
+                // Обновляем обработчики событий для новых кнопок
+                attachPaginationHandlers();
+            })
+            .catch(error => console.error('Ошибка:', error));
+        });
+    });
+
+    // Обновляем обработчики после каждой замены контента
+    function attachPaginationHandlers() {
+        const newControls = document.querySelectorAll('.page-btn');
+        newControls.forEach(control => {
+            control.addEventListener('click', () => {
+                const page = control.dataset.page;
+                fetch(`?page=${page}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newContent = doc.querySelector('#catalog');
+                    document.querySelector('#catalog').innerHTML = newContent.innerHTML;
+                    attachPaginationHandlers();
+                })
+                .catch(error => console.error('Ошибка:', error));
+            });
+        });
+    }
+});
+</script>

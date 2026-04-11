@@ -1,4 +1,4 @@
-/* static/css/auth.css */
+/* static/css/aut.css */
 
 /* Стиль контейнера при логине / регистрации */
 .container {
@@ -140,3 +140,49 @@ nav a:hover {
     transform: translateY(-2px);
 }
 
+/* Центрируем пагинацию и делаем кнопки красивыми */
+.pagination {
+    display: flex;
+    justify-content: center; /* по горизонтали в центр */
+    margin: 20px 0; /* отступ сверху и снизу */
+}
+
+/* Убрать фиксированное позиционирование, чтобы она располагалась под книгами */
+
+.pagination ul {
+    display: flex;
+    gap: 8px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.pagination li {
+    cursor: pointer;
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background-color 0.3s, transform 0.2s;
+    background-color: #f2f2f2;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    user-select: none;
+}
+
+.pagination span.current-page {
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.pagination li:hover {
+    background-color: #e6e6e6;
+    transform: scale(1.05);
+}
+
+.pagination li.disabled {
+    color: #ccc;
+    cursor: not-allowed;
+    background: transparent;
+}

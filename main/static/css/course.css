@@ -1,0 +1,161 @@
+/* /static/css/courses.css */
+
+main {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+    font-family: Arial, sans-serif;
+}
+h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+.course-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+.course-card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 20px;
+    transition: transform 0.2s;
+}
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+}
+.course-title {
+    font-size: 18px;
+    color: #007bff;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+.course-description {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 15px;
+}
+.btn-enroll {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #5c7cfa;
+    color: white;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+.btn-enroll:hover {
+    background-color: #4668dd;
+}
+
+/* Стиль модалки */
+#timeSelectionModal {
+    display: none;
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 1000;
+    border-radius: 8px;
+}
+/* Стиль уведомления */
+#notification {
+    display: none;
+    position: fixed;
+    top: 10%;
+    right: 10px;
+    background: #4caf50;
+    color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+}
+/* Раздел для моих записей */
+#my-registrations {
+    margin-top: 30px;
+    padding: 15px;
+    background: #f0f0f0;
+    border-radius: 8px;
+}
+#my-registrations h3 {
+    margin-top: 0;
+}
+/* Стиль кнопок внутри модалки */
+#timeOptions button {
+    margin: 5px;
+    padding: 8px 12px;
+    border: none;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+}
+#timeOptions button:hover {
+    background-color: #4668dd;
+}
+
+/* Стиль для кнопки удаления записи */
+.delete-btn {
+    position: absolute;          /* Позиционирование относительно родителя */
+    top: 8px;
+    right: 8px;
+    width: 35px;
+    height: 35px;
+    background-color: red;
+    color: white;
+    font-size: 24px;             /* Размер крестика */
+    line-height: 35px;           /* Вертикальное центрирование */
+    border: none;
+    border-radius: 50%;           /* Круглая */
+    cursor: pointer;
+    display: flex;                 /* Для центрирования крестика по вертикали и горизонтали */
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    transition: background 0.3s, transform 0.2s;
+}
+
+/* Цвет фона при наведении */
+.delete-btn:hover {
+    background-color: darkred;
+    transform: scale(1.1);
+}
+
+/* Родительский контейнер должен быть position: relative; */
+.registration-item {
+    position: relative; /* чтобы позиционирование кнопки было относительно этого элемента */
+    background-color: #f8f9fa;
+    margin-top: 10px;
+    padding: 10px 50px 10px 10px; /* оставить место для кнопки справа */
+    border-radius: 4px;
+    padding-right: 50px; /* чтобы не налезало на текст */
+    min-height: 40px;
+}
+
+.btn-go {
+    padding: 4px 8px; /* уменьшены отступы по сравнению с оригиналом */
+    font-size: 14px; /* чтобы текст не был слишком крупным */
+    max-width: 120px; /* ограничение по ширине */
+    white-space: nowrap; /* чтобы текст не переносился */
+    overflow: hidden; /* чтобы не выходить за рамки */
+    text-overflow: ellipsis; /* добавляет троеточие, если текст длинный */
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn-go:hover {
+    background-color: #0069d9;
+}

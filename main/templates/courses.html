@@ -1,63 +1,12 @@
+<!-- templates/courses.html -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Курсы – Мой книжный магазин</title>
-    <link rel="stylesheet" href="/static/css/auth.css" />
-    <style>
-        main {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 0 20px;
-            font-family: Arial, sans-serif;
-        }
-        h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-        }
-        .course-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-        .course-card {
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 20px;
-            transition: transform 0.2s;
-        }
-        .course-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 18px rgba(0,0,0,0.15);
-        }
-        .course-title {
-            font-size: 18px;
-            color: #007bff;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-        .course-description {
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 15px;
-        }
-        .btn-enroll {
-            display: inline-block;
-            padding: 10px 15px;
-            background-color: #5c7cfa;
-            color: white;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: background-color 0.3s;
-        }
-        .btn-enroll:hover {
-            background-color: #4668dd;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/css/aut.css" />
+    <link rel="stylesheet" href="/static/css/course.css" />
 </head>
 <body>
 <header>
@@ -70,8 +19,7 @@
                 <li><a href="/courses">Курсы</a></li>
             </ul>
         </nav>
-        <div class="cart-info">
-        </div>
+        <div class="cart-info"></div>
     </div>
 </header>
 
@@ -81,34 +29,293 @@
         <div class="course-card">
             <div class="course-title">Курс по современному роману</div>
             <div class="course-description">Узнайте, как анализировать и писать современные романы с профессионалами.</div>
-            <a href="/confirmation/?course=Курс+по+современному+роману" class="btn-enroll">Записаться</a>
+            <button class="btn-enroll" data-course="Курс по современному роману">Записаться</button>
         </div>
         <div class="course-card">
             <div class="course-title">Литературное мастерство для начинающих</div>
             <div class="course-description">Основы сторителлинга и написания выразительных текстов для всех.</div>
-            <a href="/confirmation/?course=Литературное+мастерство+для+начинающих" class="btn-enroll">Записаться</a>
+            <button class="btn-enroll" data-course="Литературное мастерство для начинающих">Записаться</button>
         </div>
         <div class="course-card">
             <div class="course-title">История мировой литературы</div>
             <div class="course-description">Погрузитесь в эпохи и направления литературного развития от античности до современности.</div>
-            <a href="/confirmation/?course=История+мировой+литературы" class="btn-enroll">Записаться</a>
+            <button class="btn-enroll" data-course="История мировой литературы">Записаться</button>
         </div>
         <div class="course-card">
             <div class="course-title">Поэзия и её мастерство</div>
             <div class="course-description">Изучите поэтические формы и техники от классики до современности.</div>
-            <a href="/confirmation/?course=Поэзия+и+её+мастерство" class="btn-enroll">Записаться</a>
+            <button class="btn-enroll" data-course="Поэзия и её мастерство">Записаться</button>
         </div>
         <div class="course-card">
             <div class="course-title">Писательский интенсив</div>
             <div class="course-description">Практические занятия по развитию писательских навыков и креативности.</div>
-            <a href="/confirmation/?course=Писательский+интенсив" class="btn-enroll">Записаться</a>
+            <button class="btn-enroll" data-course="Писательский интенсив">Записаться</button>
         </div>
         <div class="course-card">
             <div class="course-title">Литература и кино</div>
             <div class="course-description">Как адаптировать литературные произведения для экрана и анализировать кино.</div>
-            <a href="/confirmation/?course=Литература+и+кино" class="btn-enroll">Записаться</a>
+            <button class="btn-enroll" data-course="Литература и кино">Записаться</button>
+        </div>
+    </div>
+
+    <!-- Раздел с текущими записями -->
+    <div id="my-registrations">
+        <h3>Мои записи:</h3>
+        <div id="registrations-list">
+            {% for reg in registrations %}
+                <div data-id="{{ reg.id }}" class="registration-item">
+                    {{ reg.course_name }} - {{ reg.time }} ({{ reg.date_created }})
+                    <button class="btn-go" onclick="goToCourse('{{ reg.course_name|escapejs }}')">Перейти</button>
+                    <button class="delete-btn" data-id="{{ reg.id }}" title="Удалить">&times;</button>
+                </div>
+            {% empty %}
+                <em>Нет записей</em>
+            {% endfor %}
         </div>
     </div>
 </main>
+
+<!-- Модальное окно для выбора времени -->
+<div id="timeSelectionModal">
+    <h3>Выберите время</h3>
+    <div id="timeOptions"></div>
+    <button onclick="closeModal()">Отмена</button>
+</div>
+
+<!-- Уведомление -->
+<div id="notification"></div>
+
+<script>
+const times = ["9:00","11:00","13:00", "15:00", "17:00", "21:00", "23:00",];
+
+// Обработка кнопок записи на курс
+document.querySelectorAll('.btn-enroll').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const courseName = btn.getAttribute('data-course');
+        showTimeSelection(courseName);
+    });
+});
+
+function goToCourse(courseName) {
+    // Можно перейти на отдельную страницу курса
+    window.location.href = `/course-video/${encodeURIComponent(courseName)}/`;
+}
+
+function showTimeSelection(course) {
+    const modal = document.getElementById('timeSelectionModal');
+    const optionsDiv = document.getElementById('timeOptions');
+    optionsDiv.innerHTML = '';
+
+    // Создаем кнопки для выбора времени
+    times.forEach(time => {
+        const btn = document.createElement('button');
+        btn.textContent = time;
+        btn.onclick = () => {
+            saveRegistration(course, time);
+            closeModal();
+            showNotification(`Запись на "${course}" на ${time} успешно сохранена.`);
+        };
+        optionsDiv.appendChild(btn);
+    });
+
+    modal.style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('timeSelectionModal').style.display = 'none';
+}
+
+function showNotification(message, color='black') {
+    const notif = document.getElementById('notification');
+    notif.textContent = message;
+    notif.style.color = color;
+    notif.style.display = 'block';
+    setTimeout(() => {
+        notif.style.display = 'none';
+    }, 3000);
+}
+
+// Сохраняем новую регистрацию через AJAX
+function saveRegistration(course, time) {
+    fetch('/save_registration/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({course: course, time: time})
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'ok') {
+            // сохраняем выбранное время для курса
+            localStorage.setItem('course_time', time);
+            updateRegistrations();
+        } else {
+            showNotification('Ошибка при сохранении регистрации.');
+        }
+    });
+}
+
+// Обновляем список текущих регистраций с сервераitem.innerHTML = `
+function updateRegistrations() {
+    fetch('/get_registrations/')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Обновление регистраций:', data);
+            const listDiv = document.getElementById('registrations-list');
+            listDiv.innerHTML = '';
+
+            if (Array.isArray(data)) {
+                // Если API возвращает массив объектов
+                if (data.length === 0) {
+                    listDiv.innerHTML = '<em>Нет записей</em>';
+                    return;
+                }
+                data.forEach(r => {
+                    console.log('Запись:', r);
+                    const courseName = r.course || 'Без названия';
+                    const time = r.time || 'не указано'; // Отображение времени
+                    const date = r.date || 'не указана';
+
+                    // Для отладки: проверьте, есть ли `r.time`
+                    if (!r.hasOwnProperty('time')) {
+                        console.warn('В ответе отсутствует поле `time` для записи', r);
+                    }
+
+                    const item = document.createElement('div');
+                    item.className = 'registration-item';
+                    item.setAttribute('data-id', r.id);
+                    item.textContent = `${courseName} - ${time} (${date}) `;
+
+                    // Создаем кнопку "Перейти"
+                    const goBtn = document.createElement('button');
+                    goBtn.className = 'btn-go'; // добавьте класс, если есть стиль
+                    goBtn.textContent = 'Перейти'; // текст кнопки
+                    // Можно еще добавить привязку события прямо сюда, или оставить onclick как раньше
+                    goBtn.onclick = () => {
+                    goToCourse(courseName);
+                    };
+
+                    // Создаем кнопку "Удалить"
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'delete-btn';
+                    delBtn.setAttribute('data-id', r.id);
+                    delBtn.innerHTML = '&times;';
+
+                    // Вставляем кнопки внутрь элемента
+                    item.appendChild(goBtn);
+                    item.appendChild(delBtn);
+                    listDiv.appendChild(item);
+                });
+            } else if (data.registrations && Array.isArray(data.registrations)) {
+                // Обработка другого формата данных
+                data.registrations.forEach(r => {
+                    console.log('Запись:', r);
+                    const courseName = r.course || 'Без названия';
+                    const time = r.time || 'не указано'; 
+                    const date = r.date || 'не указана';
+
+                    const item = document.createElement('div');
+                    item.className = 'registration-item';
+                    item.setAttribute('data-id', r.id);
+                    item.textContent = `${courseName} - ${time} (${date}) `;
+
+                    const delBtn = document.createElement('button');
+                    delBtn.className = 'delete-btn';
+                    delBtn.setAttribute('data-id', r.id);
+                    delBtn.innerHTML = '&times;';
+
+                    item.appendChild(delBtn);
+                    listDiv.appendChild(item);
+                });
+            } else {
+                console.error('Неподдерживаемый формат данных:', data);
+            }
+        });
+}
+
+// Обработка делегированием событий удаления
+document.getElementById('registrations-list').addEventListener('click', function(e) {
+    if (e.target.classList.contains('delete-btn')) {
+        const regId = e.target.getAttribute('data-id');
+
+        fetch(`/delete_registration/${regId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({id: regId}) // Можно оставить, если требуется в теле, но важно в URL
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'ok') {
+                showNotification('Запись успешно удалена.');
+                updateRegistrations(); // Обновляем список
+            } else {
+                showNotification('Ошибка при удалении.');
+            }
+        });
+    }
+});
+
+// Функция для получения CSRF-токена из cookies
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i=0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function isTimePast(selectedTime) {
+    const now = new Date();
+    const [sh, sm] = selectedTime.split(':').map(Number);
+    const currentHours = now.getHours();
+    const currentMinutes = now.getMinutes();
+
+    if (sh < currentHours || (sh === currentHours && sm <= currentMinutes)) {
+        return true; // Уже поздно
+    }
+    return false; // Можно записывать
+}
+
+function showTimeSelection(course) {
+    const modal = document.getElementById('timeSelectionModal');
+    const optionsDiv = document.getElementById('timeOptions');
+    optionsDiv.innerHTML = '';
+
+    // Создаем кнопки для выбора времени
+    times.forEach(time => {
+        const btn = document.createElement('button');
+        btn.textContent = time;
+        btn.onclick = () => {
+            if (isTimePast(time)) {
+                // Уже поздно
+                showNotification('Это время уже прошло. Выберите другое время.');
+                closeModal();
+            } else {
+                saveRegistration(course, time);
+                closeModal();
+                showNotification(`Запись на "${course}" на ${time} успешно сохранена.`);
+            }
+        };
+        optionsDiv.appendChild(btn);
+    });
+
+    modal.style.display = 'block';
+}
+
+// Обновляем список при загрузке страницы
+window.onload = updateRegistrations;
+</script>
 </body>
 </html>

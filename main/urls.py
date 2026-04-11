@@ -5,8 +5,11 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
+    path('course-video/<str:course_name>/', views.course_video, name='course_video'),
+    path('save_registration/', views.save_registration, name='save_registration'),
+    path('get_registrations/', views.get_registrations, name='get_registrations'),
+    path('delete_registration/<int:reg_id>/', views.delete_registration, name='delete_registration'),
     path('courses/', views.courses, name='courses'),
-    path('confirmation/', views.confirmation, name='confirmation'),
     path('books/delete/<int:pk>/', views.delete_book, name='delete_book'),
     path('comment/delete/<int:pk>/', views.delete_comment, name='delete_comment'),
     path('books/<int:pk>/', views.book_detail, name='book_detail'),
