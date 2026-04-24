@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>Литература</title>
-    <link rel="stylesheet" href="{% static 'css/aut.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
     <link rel="stylesheet" href="{% static 'css/books.css' %}">
     
 </head>
@@ -25,7 +25,7 @@
             </ul>
         </nav>
         <div class="cart-info">
-            <a href="/cart/">В корзине: <span id="cart-count">{{ request.session.cart|sum_dict_values }}</span> товаров</a>
+            <a href="/cart/">В корзине: <span id="cart-count">{{ request.session.cart|sum_dict_quantities }}</span> товаров</a>
         </div>
     </div>
 </header>

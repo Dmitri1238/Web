@@ -28,3 +28,25 @@ def sum_dict_values(d):
     if not isinstance(d, dict):
         return 0
     return sum(d.values())
+
+@register.filter
+def sum_dict_quantities(d):
+    if not isinstance(d, dict):
+        return 0
+    total_quantity = 0
+    for item in d.values():
+        total_quantity += item.get('quantity', 0)
+    return total_quantity
+
+@register.filter
+def sum_dict_total_price(d):
+    if not isinstance(d, dict):
+        return 0
+    total_price = 0
+    for item in d.values():
+        total_price += item.get('price', 0) * item.get('quantity', 0)
+    return total_price
+
+@register.filter
+def split(value, delimiter=' '):
+    return value.split(delimiter)

@@ -5,6 +5,13 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
+    path('admin/payment-request/<int:request_id>/approve/', views.approve_payment_request, name='approve_payment_request'),
+    path('admin/payment-request/<int:request_id>/reject/', views.reject_payment_request, name='reject_payment_request'),
+    path('payment-request/submit/', views.submit_payment_request, name='submit_payment_request'),
+    path('make_payment/', views.make_payment, name='make_payment'),
+    path('recharge/', views.recharge_balance, name='recharge_balance'),
+    path('payment-request/', views.payment_request_form, name='payment_request_form'),
+    path('add-book/', views.add_book, name='add_book'),
     path('course-video/<str:course_name>/', views.course_video, name='course_video'),
     path('save_registration/', views.save_registration, name='save_registration'),
     path('get_registrations/', views.get_registrations, name='get_registrations'),
@@ -29,6 +36,7 @@ urlpatterns = [
     path('profile/edit/', views.profile_edit, name='profile_edit'),
     path('logout/', views.logout_view, name='logout'),
     path('', views.home, name='home'),
+    
 ]
 
 if settings.DEBUG:

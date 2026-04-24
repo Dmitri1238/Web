@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Курсы – Мой книжный магазин</title>
-    <link rel="stylesheet" href="/static/css/aut.css" />
+    <link rel="stylesheet" href="/static/css/auth.css" />
     <link rel="stylesheet" href="/static/css/course.css" />
 </head>
 <body>
@@ -86,7 +86,7 @@
 <div id="notification"></div>
 
 <script>
-const times = ["9:00","11:00","13:00", "15:00", "17:00", "21:00", "23:00",];
+const times = ["9:00", "11:00", "13:00", "15:00", "17:00", "21:00", "23:00",];
 
 // Обработка кнопок записи на курс
 document.querySelectorAll('.btn-enroll').forEach(btn => {
@@ -143,12 +143,11 @@ function saveRegistration(course, time) {
             'X-CSRFToken': getCookie('csrftoken'),
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({course: course, time: time})
+        body: JSON.stringify({ course: course, time: time })
     })
     .then(response => response.json())
     .then(data => {
         if (data.status === 'ok') {
-            // сохраняем выбранное время для курса
             localStorage.setItem('course_time', time);
             updateRegistrations();
         } else {
@@ -190,7 +189,7 @@ function updateRegistrations() {
 
                     // Создаем кнопку "Перейти"
                     const goBtn = document.createElement('button');
-                    goBtn.className = 'btn-go'; // добавьте класс, если есть стиль
+                    goBtn.className = 'btn-go';
                     goBtn.textContent = 'Перейти'; // текст кнопки
                     // Можно еще добавить привязку события прямо сюда, или оставить onclick как раньше
                     goBtn.onclick = () => {
@@ -246,7 +245,7 @@ document.getElementById('registrations-list').addEventListener('click', function
                 'X-CSRFToken': getCookie('csrftoken'),
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({id: regId}) // Можно оставить, если требуется в теле, но важно в URL
+            body: JSON.stringify({id: regId})
         })
         .then(response => response.json())
         .then(data => {

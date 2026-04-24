@@ -1,0 +1,85 @@
+<!-- templates/payment_request_form.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Создать заявку на пополнение</title>
+    <link rel="stylesheet" href="/static/css/auth.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 600px;
+            margin: auto;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        input, textarea, select {
+            margin-top: 5px;
+            padding: 8px;
+            font-size: 14px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<!-- Навигация -->
+<header>
+    <div class="header-top">
+        <h1>Мой книжный магазин</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Главная</a></li>
+                <li><a href="/catalog/">Каталог</a></li>
+                <li><a href="/courses/">Курсы</a></li>
+                <li><a href="/about/">О нас</a></li>
+            </ul>
+        </nav>
+    </div>
+</header>
+<body>
+<h1>Создать заявку на пополнение счета</h1>
+<form method="POST" action="{% url 'submit_payment_request' %}">
+    {% csrf_token %}
+    
+    <label for="amount">Сумма запроса (руб):</label>
+    <input type="number" id="amount" name="amount" step="0.01" min="1" required>
+    
+    <label for="goal">Цель пополнения:</label>
+    <select id="goal" name="goal" required>
+        <option value="участвовать в аукционе">Покупка книги</option>
+        <option value="не хватает на премиум-функцию">Покупка курса</option>
+        <option value="другое">Другое</option>
+    </select>
+    
+    <label for="comment">Комментарий:</label>
+    <textarea id="comment" name="comment" rows="3" placeholder="Дополнительная информация..."></textarea>
+    
+    <button type="submit">Отправить заявку</button>
+</form>
+</body>
+</html>

@@ -10,7 +10,7 @@
     </div>
     <h4>{{ book.title }}</h4>
     <p>Автор: {{ book.author }}</p>
-    <p class="price">Цена: {{ book.price }} ₽</p>
+    <p class="price">Цена: {{ book.price|floatformat:2 }} ₽</p>
     
     <!-- Оценка -->
     <div class="rating" data-book-id="{{ book.id }}" data-user-rating="{{ user_ratings|get_item:book.id|default:'0' }}">

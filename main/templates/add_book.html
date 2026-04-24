@@ -1,0 +1,51 @@
+<!-- add_book.html -->
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Добавить новую книгу</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+<nav>
+    <a href="/">Главная</a>
+    <a href="/catalog/">Каталог</a>
+    <a href="/about/">О нас</a>
+    <a href="/courses/">Курсы</a>
+</nav>
+
+<h2>Добавить новую книгу</h2>
+
+<div class="add-book-form">
+    <!-- Тут можно вывести ошибки -->
+    
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label>Название книги</label>
+        <input type="text" name="title" placeholder="Название книги" required />
+
+        <label>Автор</label>
+        <input type="text" name="author" placeholder="Автор" required />
+
+        <label>Цена</label>
+        <input type="number" step="0.01" name="price" placeholder="Цена" required />
+
+        <label>Категория</label>
+        <select name="category" required>
+            {% for category in categories %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Обложка</label>
+        <input type="file" name="cover" accept="image/*" required />
+
+        <button type="submit">Добавить книгу</button>
+    </form>
+</div>
+
+</body>
+</html>

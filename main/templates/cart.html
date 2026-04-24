@@ -49,10 +49,15 @@
         .delete-btn:hover {
             background-color: #c82333;
         }
+        .error {
+            color: red;
+        }
     </style>
 </head>
 <body>
 <h1>Ваша корзина</h1>
+<p>Ваш баланс: {{ balance }} ₽</p>
+
 
 {% if cart_items %}
 <table>
@@ -84,5 +89,16 @@
 {% endif %}
 
 <a href="/">Продолжить покупки</a>
+<form method="post" action="{% url 'make_payment' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit">Оплатить</button>
+</form>
+{% if messages %}
+    {% for message in messages %}
+        <p class="{% if 'error' in message.tags %}error{% endif %}">
+            {{ message }}
+        </p>
+    {% endfor %}
+{% endif %}
 </body>
 </html>

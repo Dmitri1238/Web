@@ -1,3 +1,4 @@
+<!-- templates/book_detail.html -->
 {% load static %}
 {% load utils %}
 
@@ -6,7 +7,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>{{ book.title }}</title>
-    <link rel="stylesheet" href="{% static 'css/aut.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
     <style>
         /* Общее оформление страницы */
         body {
@@ -135,12 +136,6 @@
         <li><a href="/catalog/">Каталог</a></li>
         <li><a href="/about/">О нас</a></li>
         <li><a href="/courses/">Курсы</a></li>
-        {% if user.is_authenticated %}
-            <li><a href="{% url 'logout' %}">Выйти</a></li>
-        {% else %}
-            <li><a href="{% url 'login' %}">Войти</a></li>
-            <li><a href="{% url 'register' %}">Регистрация</a></li>
-        {% endif %}
     </ul>
 </nav>
 
@@ -161,7 +156,7 @@
 
     <!-- Автор и цена -->
     <p>Автор: {{ book.author }}</p>
-    <p class="price">Цена: {{ book.price }} ₽</p>
+    <p class="price">Цена: {{ book.price|floatformat:2 }} ₽</p>
 
     <!-- Кнопка добавления комментария -->
     <a href="{% url 'add_comment' book.id %}" class="add-comment-btn">Добавить комментарий</a>

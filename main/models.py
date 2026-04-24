@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -41,6 +42,7 @@ class Rating(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)
+    balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)  # баланс в рублях
     STATUS_CHOICES = [
         ('user', 'Пользователь'),
         ('moderator', 'Модератор'),
@@ -66,3 +68,26 @@ class CourseRegistration(models.Model):
 
     def __str__(self):
         return f'{self.user.username} - {self.course_name} at {self.time}'
+    
+class PaymentRequest(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    goal = models.CharField(max_length=255)
+    history = models.DateTimeField(auto_now_add=True)
+    comment = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=[('pending','В ожидании'), ('approved','Одобрено'), ('rejected','Отклонено')], default='pending')
+    admin_comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    priority = models.CharField(max_length=20, choices=[('low', 'Низкий'), ('high', 'Высокий')], default='low')
+
+class Notification(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.TextField()
+    read = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Уведомление для {self.user.username}: {self.text}"
+
+    class Meta:
+        ordering = ['-created']
