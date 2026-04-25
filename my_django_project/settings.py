@@ -1,3 +1,5 @@
+import os
+import dj_database_url
 """
 Django settings for my_django_project project.
 
@@ -25,8 +27,6 @@ SECRET_KEY = 'django-insecure--dxupv^!dkm0pv0q@gvgqfcpyph@gfnda=ihl^+nng(ju3!7(7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'my_django_project.urls'
@@ -73,18 +74,16 @@ WSGI_APPLICATION = 'my_django_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+DATABASE_URL = "postgresql://neondb_owner:npg_yxHP03zFVBkZ@ep-purple-leaf-amu789d0-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'my_django_project',  # имя базы данных
-        'USER': 'AbsAdmin',            # ваш пользователь
-        'PASSWORD': 'Abs123456',      # пароль для пользователя
-        'HOST': 'localhost',           
-        'PORT': '5432',                # порт PostgreSQL
-    }
+    'default': dj_database_url.config(default=DATABASE_URL)
 }
 
-
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".onrender.com"
+]
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -125,6 +124,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 STATIC_URL = '/static/'
 # Default primary key field type
