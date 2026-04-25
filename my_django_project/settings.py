@@ -135,12 +135,12 @@ LANGUAGE_CODE = 'ru'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-cloudinary.config(
-    cloud_name=os.getenv("CLOUD_NAME"),
-    api_key=os.getenv("API_KEY"),
-    api_secret=os.getenv("API_SECRET"),
-    secure=True
-)
+if os.environ.get("CLOUD_NAME"):
+    cloudinary.config(
+        cloud_name=os.environ.get("CLOUD_NAME"),
+        api_key=os.environ.get("API_KEY"),
+        api_secret=os.environ.get("API_SECRET"),
+    )
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
