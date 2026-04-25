@@ -9,7 +9,16 @@
 - Оплата книг
 - Редактирование профиля
 - Выбор курсов
+## Сайт:
+- https://web-7xpt.onrender.
 
+## Технологии:
+- Python
+- Django
+- PostgreSQL (Neon)
+- Gunicorn
+- Whitenoise
+- HTML / CSS, JavaScript
 
 ## Как запустить:
 1. Клонируйте репозиторий:`https://github.com/Dmitri1238/Web`
