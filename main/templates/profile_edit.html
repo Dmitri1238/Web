@@ -8,7 +8,6 @@
     <!-- Подключение внешнего файла стилей -->
     <link rel="stylesheet" type="text/css" href="{% static 'css/auth.css' %}">
     <style>
-        /* Можно добавить немного кастомных стилей для формы */
         .container {
             max-width: 600px;
             margin: 50px auto;
@@ -85,7 +84,6 @@
 
             <button type="submit">Сохранить</button>
         </form>
-        <!-- Можно добавить ссылку для возвращения в профиль, если нужно -->
         <p style="text-align:center; margin-top:15px;">
             <a href="{% url 'profile' %}">Вернуться к профилю</a>
         </p>

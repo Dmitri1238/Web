@@ -159,7 +159,7 @@ def catalog_view(request):
     categories = Category.objects.all()
     books = Book.objects.all()
 
-    # Собираем рейтинги пользователя по всем книгам (если нужно)
+    # Собираем рейтинги пользователя по всем книгам
     book_ratings = {}
     for book in books:
         rating_obj = Rating.objects.filter(user=request.user, book=book).first()
@@ -393,10 +393,16 @@ def book_detail(request, pk):
 @login_required
 def delete_comment(request, pk):
     comment = get_object_or_404(Comment, pk=pk)
+
     if request.method == 'POST':
-        is_moderator = request.user.groups.filter(name='Модератор').exists()
+        is_moderator = (
+            hasattr(request.user, 'userprofile') and
+            request.user.userprofile.status == 'moderator'
+        )
+
         if comment.user == request.user or request.user.is_superuser or is_moderator:
             comment.delete()
+
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 @user_passes_test(lambda u: u.is_superuser)
@@ -405,7 +411,7 @@ def delete_book(request, pk):
     book = get_object_or_404(Book, pk=pk)
     if request.method == 'POST':
         book.delete()
-        return redirect('catalog')
+        return redirect('home')
     return render(request, 'main/confirm_delete.html', {'book': book})
 
 @login_required
@@ -437,7 +443,7 @@ def get_registrations(request):
             'id': reg.id,
             'course': reg.course_name,
             'date': reg.date_created.strftime('%d-%m-%Y'),
-            'time': reg.time if reg.time else '',  # просто возвращать строку
+            'time': reg.time if reg.time else '',
         })
     return JsonResponse(data, safe=False)
 
@@ -478,11 +484,16 @@ def save_registration(request):
 
 @login_required
 def course_video(request, course_name):
-    # Определите, как искать курс. Пока ищем по имени
-    registration = get_object_or_404(CourseRegistration, user=request.user, course_name=course_name)
-    
-    # Имя курса можно показать в шаблоне или передать дополнительные данные
-    return render(request, 'course_video.html', {'course_name': course_name})
+    registration = get_object_or_404(
+        CourseRegistration,
+        user=request.user,
+        course_name=course_name
+    )
+
+    return render(request, 'course_video.html', {
+        'course_name': course_name,
+        'course_time_start': registration.time  # 👈 ВОТ ЭТО ГЛАВНОЕ
+    })
 
 def is_admin_or_moderator(user):
     try:
@@ -543,7 +554,7 @@ def make_payment(request):
                 quantity = 1
             total_amount += price * quantity
 
-        # Остальной код, если корзина не пуста...
+        #если корзина не пуста...
         if profile.balance < total_amount:
             messages.error(request, 'На вашем счёте недостаточно средств для оплаты.', extra_tags='error')
             return redirect('cart')
@@ -569,7 +580,7 @@ def recharge_balance(request):
             messages.success(request, f'Вы успешно пополнили баланс на {amount} рублей.')
         else:
             messages.error(request, 'Некорректная сумма.')
-        return redirect('home')  # или другая страница
+        return redirect('home')
 
 @login_required
 def payment_request_form(request):
@@ -585,7 +596,7 @@ def payment_request_form(request):
         )
         
         messages.add_message(request, messages.INFO, 'Заявка успешно отправлена', extra_tags='user-{}'.format(request.user.id))
-        return redirect('home')  # или нужная страница
+        return redirect('home')
     return render(request, 'payment_request_form.html')
 
 @login_required

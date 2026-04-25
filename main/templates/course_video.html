@@ -20,6 +20,7 @@
         <nav>
             <ul>
                 <li><a href="/">Главная</a></li>
+                <li><a href="/about/">О нас</a></li>
                 <li><a href="/catalog/">Каталог</a></li>
                 <li><a href="/courses">Курсы</a></li>
             </ul>
@@ -40,104 +41,106 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const startTimeStr = localStorage.getItem('course_time') || "{{ course_time_start|escapejs }}"; // например, "23:00"
-    const durationHours = 2; // длительность интервала, измените по необходимости
-    let isVideoPlaying = false;
-    let canShowButton = false;
+    const durationHours = 2;
+
     const notificationElem = document.getElementById('notification');
     const videoContainer = document.getElementById('videoContainer');
     const viewButton = document.getElementById('videoButton');
     const fakeVideo = document.getElementById('fakeVideo');
 
+    let canShowButton = false;
+
     function checkTime() {
         const now = new Date();
-        console.log('Текущий время:', now);
 
-        // Получаем сохраненное время
-        const savedTimeStr = localStorage.getItem('course_time');
-        console.log('Сохраненное время курса из localStorage:', savedTimeStr);
+        // берём время курса
+        const courseName = "{{ course_name|escapejs }}";
+        const savedTimeStr = localStorage.getItem(`course_time_${courseName}`) 
+            || "{{ course_time_start|escapejs }}";
 
         if (!savedTimeStr) {
-            console.log('Нет сохраненного времени курса.');
             notificationElem.textContent = 'Не выбрано время курса.';
             videoContainer.style.display = 'none';
-            if (viewButton) viewButton.style.display = 'none';
-            canShowButton = false;
+            viewButton.style.display = 'none';
             return;
         }
 
         const [sh, sm] = savedTimeStr.split(':').map(Number);
-        console.log(`Планируемая дата начала: ${sh}:${sm}`);
 
-        // Определяем дату начала сегодня
-        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), sh, sm);
+        //  старт сегодня
+        const start = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            sh,
+            sm
+        );
+
         const end = new Date(start.getTime() + durationHours * 60 * 60 * 1000);
-        console.log('Время начала курса:', start);
-        console.log('Время окончания курса:', end);
 
-        // Если текущая дата меньше start, значит ещё не время
+        console.log('Сейчас:', now);
+        console.log('Старт:', start);
+        console.log('Конец:', end);
+
+        //  ещё не начался
         if (now < start) {
-            console.log('Еще не наступило время курса.');
             notificationElem.textContent = 'Этот курс еще не начался.';
             videoContainer.style.display = 'none';
-            if (viewButton) viewButton.style.display = 'none';
-            canShowButton = false;
+            viewButton.style.display = 'none';
             return;
         }
 
-        // Если текущая дата больше end, значит курс прошел
+        // ❌ прошло больше 2 часов
         if (now >= end) {
-            console.log('Время курса уже прошло.');
             notificationElem.textContent = 'Этот курс уже прошел.';
             videoContainer.style.display = 'none';
-            if (viewButton) viewButton.style.display = 'none';
-            canShowButton = false;
+            viewButton.style.display = 'none';
             return;
         }
 
-        // Проверяем, есть ли стартовое время запуска видео
+        //  проверка запуска видео
         const storedTime = localStorage.getItem('videoStartTime');
-        console.log('Стартовое время видео из localStorage:', storedTime);
 
         if (storedTime) {
             const startTS = parseInt(storedTime);
-            console.log('Текущий таймстамп старта видео:', startTS);
-            // Проверка, что текущее время не раньше стартового
-            if (now.getTime() < startTS) {
-                console.log('Не время запускать видео ещё.');
-                notificationElem.textContent = 'Подождите, запуск видео возможен только в назначенное время.';
-                if (viewButton) viewButton.style.display = 'none';
-                canShowButton = false;
-                return;
-            }
-            // Проверка, не истекло ли время просмотра
             const elapsed = now.getTime() - startTS;
-            console.log('Прошло с момента запуска видео, мс:', elapsed);
+
             if (elapsed > durationHours * 60 * 60 * 1000) {
-                console.log('Время просмотра истекло.');
-                alert('Время просмотра этого видео истекло.');
+                alert('Время просмотра истекло');
                 localStorage.removeItem('videoStartTime');
-                fakeVideo.textContent = '🚀 Видео курса ― тут будет видео 🎬';
-                if (viewButton) viewButton.style.display = 'none';
-                canShowButton = false;
+                videoContainer.style.display = 'none';
+                viewButton.style.display = 'none';
                 return;
-            }
-        } else {
-            console.log('Нет сохраненного времени запуска видео, можно запускать.');
         }
 
-        // Всё в порядке, можем показывать кнопку
-        if (viewButton) {
-            viewButton.style.display = 'inline-block';
-            console.log('Показываем кнопку для просмотра видео.');
+            videoContainer.style.display = 'block';
+        } else {
+            //  если не запускали — запускаем автоматически
+            videoContainer.style.display = 'block';
         }
+
+        //  можно смотреть
         notificationElem.textContent = '';
+        viewButton.style.display = 'inline-block';
         canShowButton = true;
     }
 
-    // Проверка каждые 30 секунд
+    //  запуск видео
+    window.toggleVideo = function () {
+        if (!canShowButton) return;
+
+        const now = new Date().getTime();
+
+        if (!localStorage.getItem('videoStartTime')) {
+            localStorage.setItem('videoStartTime', now);
+        }
+
+        videoContainer.style.display = 'block';
+        fakeVideo.textContent = '🎬 Видео воспроизводится...';
+    };
+
     setInterval(checkTime, 30000);
-    checkTime(); // немедленная проверка при загрузке
+    checkTime();
 });
 </script>
 

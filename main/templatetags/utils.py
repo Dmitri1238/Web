@@ -19,9 +19,12 @@ def to(value, arg):
     
 @register.filter
 def is_moderator(user):
-    if user.is_authenticated:
-        return user.groups.filter(name='Модератор').exists()
-    return False
+    if not user.is_authenticated:
+        return False
+    try:
+        return user.userprofile.status == 'moderator'
+    except:
+        return False
 
 @register.filter
 def sum_dict_values(d):

@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- НОВЫЙ КОД ДЛЯ FORM "ДОБАВИТЬ В КОРЗИНУ" ---
+    // --- НОВЫЙ КОД ДЛЯ FORM "ДОБАВИТЬ В КОРЗИНУ" with защита от дубля ---
     const addToCartForms = document.querySelectorAll('.add-to-cart-form');
 
     // Функция для получения CSRF токена из cookie
@@ -202,35 +202,56 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const csrftoken = getCookie('csrftoken');
 
-    addToCartForms.forEach(form => {
-        form.addEventListener('submit', event => {
-            event.preventDefault(); // отменяем стандартную отправку формы
-            const url = form.action;
+    // Обработчик для добавления в корзину, с флагом блокировки
+    function handleAddToCart(event) {
+        event.preventDefault();
 
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrftoken
-                },
-                body: new FormData(form)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Дополнительно можно обновить счетчик корзины, если есть на странице:
-                    const cartCounter = document.querySelector('#cart-count');
-                    if (cartCounter && data.cart_count !== undefined) {
-                        cartCounter.textContent = data.cart_count;
-                    }
-                } else {
-                    alert('Ошибка при добавлении в корзину');
+        const form = event.target; // текущая форма
+        if (form.dataset.loading === 'true') {
+            // Уже отправляется, ничего не делаем
+            return;
+        }
+
+        // Устанавливаем флаг блокировки
+        form.dataset.loading = 'true';
+
+        const url = form.action;
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken
+            },
+            body: new FormData(form)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Снимаем блокировку
+            form.dataset.loading = 'false';
+
+            if (data.success) {
+                // Обновляем счетчик корзины, если есть
+                const cartCounter = document.querySelector('#cart-count');
+                if (cartCounter && data.cart_count !== undefined) {
+                    cartCounter.textContent = data.cart_count;
                 }
-            })
-            .catch(error => {
-                console.error('Ошибка:', error);
-                alert('Ошибка запроса');
-            });
+            } else {
+                alert('Ошибка при добавлении в корзину');
+            }
+        })
+        .catch(error => {
+            // Снимаем блокировку даже при ошибке
+            form.dataset.loading = 'false';
+            console.error('Ошибка:', error);
+            alert('Ошибка запроса');
         });
+    }
+
+    // Вешаем обработчики один раз
+    addToCartForms.forEach(form => {
+        // Удаляем возможные предыдущие обработчики, чтобы избежать дубля
+        form.removeEventListener('submit', handleAddToCart);
+        form.addEventListener('submit', handleAddToCart);
     });
 });
 </script>

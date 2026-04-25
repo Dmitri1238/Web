@@ -15,6 +15,7 @@
         <nav>
             <ul>
                 <li><a href="/">Главная</a></li>
+                <li><a href="/about/">О нас</a></li>
                 <li><a href="/catalog/">Каталог</a></li>
                 <li><a href="/courses">Курсы</a></li>
             </ul>
@@ -97,7 +98,6 @@ document.querySelectorAll('.btn-enroll').forEach(btn => {
 });
 
 function goToCourse(courseName) {
-    // Можно перейти на отдельную страницу курса
     window.location.href = `/course-video/${encodeURIComponent(courseName)}/`;
 }
 
@@ -148,7 +148,7 @@ function saveRegistration(course, time) {
     .then(response => response.json())
     .then(data => {
         if (data.status === 'ok') {
-            localStorage.setItem('course_time', time);
+            localStorage.setItem(`course_time_${course}`, time);
             updateRegistrations();
         } else {
             showNotification('Ошибка при сохранении регистрации.');
@@ -156,7 +156,7 @@ function saveRegistration(course, time) {
     });
 }
 
-// Обновляем список текущих регистраций с сервераitem.innerHTML = `
+// Обновляем список текущих регистраций с сервера
 function updateRegistrations() {
     fetch('/get_registrations/')
         .then(response => response.json())

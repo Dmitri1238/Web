@@ -130,14 +130,21 @@
 </head>
 <body>
 <!-- Навигационное меню -->
-<nav>
-    <ul>
-        <li><a href="/">Главная</a></li>
-        <li><a href="/catalog/">Каталог</a></li>
-        <li><a href="/about/">О нас</a></li>
-        <li><a href="/courses/">Курсы</a></li>
-    </ul>
-</nav>
+
+<header>
+    <div class="header-top">
+        <h1>Мой книжный магазин</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Главная</a></li>
+                <li><a href="/about/">О нас</a></li>
+                <li><a href="/catalog/">Каталог</a></li>
+                <li><a href="/courses">Курсы</a></li>
+            </ul>
+        </nav>
+        <div class="cart-info"></div>
+    </div>
+</header>
 
 <!-- Основной контент -->
 <div class="book-detail">
@@ -170,7 +177,7 @@
                 <small>{{ comment.created_at }}</small>
 
                 <!-- Если комментарий создан текущим пользователем, показываем кнопку удаления -->
-                {% if user|is_moderator or comment.user == user or user.is_superuser %}
+                {% if user.is_authenticated and user.userprofile.status == 'moderator' or comment.user == user or user.is_superuser %}
                     <form method="POST" action="{% url 'delete_comment' comment.id %}" style="display:inline;">
                         {% csrf_token %}
                         <button type="submit" class="delete-comment" title="Удалить">&times;</button>

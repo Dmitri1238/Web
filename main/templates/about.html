@@ -8,8 +8,8 @@
     <meta charset="UTF-8" />
     <title>О нас</title>
     <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+
     <style>
-        /* Общие стили страницы */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
@@ -17,7 +17,6 @@
             padding-top: 80px;
         }
 
-        /* Заголовок страницы */
         h1 {
             text-align: center;
             margin-bottom: 30px;
@@ -25,17 +24,25 @@
             color: #333;
         }
 
-        
-
-        /* Блок с информацией о книгах */
+        /*  БЛОКИ */
         .info-block {
-            background-color: #f5f5f5;
+            background-color: #fff;
             padding: 40px 20px;
             max-width: 800px;
-            margin: auto;
+            margin: 30px auto;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             font-family: Arial, sans-serif;
+
+            /*  Анимация */
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.6s ease;
+        }
+
+        .info-block.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .info-block h2 {
@@ -45,13 +52,24 @@
             font-size: 28px;
         }
 
-        .info-block p {
+        .info-block p, .info-block li {
             font-size: 18px;
             line-height: 1.6;
-            margin-top: 20px;
         }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        /* 🔥 hover эффект */
+        .info-block:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
     </style>
 </head>
+
 <body>
 
 <h1>О нас</h1>
@@ -66,16 +84,53 @@
     </ul>
 </nav>
 
-<!-- Блок с информацией -->
+<!--  Блок 1 -->
 <div class="info-block">
-    <h2>Наши книги — ваш путь к знаниям и вдохновению</h2>
+    <h2>Наши книги — ваш путь к знаниям</h2>
     <p>
-        В мире книг каждое слово — это ключ к новым мирам, идеям и открытиям. Мы верим, что чтение — это не только способ расширить горизонты, но и источник вдохновения для жизни. Наша миссия — помочь каждому найти свою книгу, которая зажжёт искру любопытства и поможет расти как личность.
-    </p>
-    <p>
-        В нашем каталоге вы найдете книги о различной тематике: от классической литературы и научных открытий до современных бестселлеров. Каждая книга — это шаг к вашим мечтам и целям. Читайте, развивайтесь и вдохновляйтесь вместе с нами!
+        В мире книг каждое слово — это ключ к новым мирам, идеям и открытиям.
+        Мы помогаем каждому найти свою книгу для роста и вдохновения.
     </p>
 </div>
+
+<!--  Блок 2: ПОЧЕМУ МЫ -->
+<div class="info-block">
+    <h2>Почему выбирают нас</h2>
+    <ul>
+        <li>📚 Большой выбор книг разных жанров</li>
+        <li>🚀 Удобная система курсов</li>
+        <li>💬 Возможность обсуждать книги</li>
+        <li>🎓 Обучение через практику</li>
+    </ul>
+</div>
+
+<!--  Блок 3 -->
+<div class="info-block">
+    <h2>Наша миссия</h2>
+    <p>
+        Мы создаём платформу, где чтение и обучение становятся доступными,
+        интересными и современными.
+    </p>
+</div>
+
+<!--АНИМАЦИЯ ПОЯВЛЕНИЯ -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const blocks = document.querySelectorAll(".info-block");
+
+    function showBlocks() {
+        blocks.forEach(block => {
+            const rect = block.getBoundingClientRect();
+            if (rect.top < window.innerHeight - 100) {
+                block.classList.add("show");
+            }
+        });
+    }
+
+    window.addEventListener("scroll", showBlocks);
+    showBlocks(); // сразу при загрузке
+});
+</script>
 
 </body>
 </html>
