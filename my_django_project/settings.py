@@ -82,6 +82,9 @@ DATABASES = {
 }
 
 ALLOWED_HOSTS = [".onrender.com"]
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.onrender.com"
+]
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
