@@ -413,7 +413,7 @@ def delete_book(request, pk):
     book = get_object_or_404(Book, pk=pk)
     if request.method == 'POST':
         book.delete()
-        return redirect('homе')
+        return redirect('home')
     return render(request, 'main/confirm_delete.html', {'book': book})
 
 @login_required
