@@ -1,34 +1,37 @@
-import json
-import logging
-import random
-import re
-from datetime import datetime
-from decimal import Decimal
-
-from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.core.paginator import Paginator
-from django.db import transaction
 from django.http import JsonResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
+from django.contrib.auth import login, logout, authenticate
+from .forms import RegisterForm
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import Book, Comment
+from .models import Category
+from .models import Rating
+from .models import UserProfile
+from .models import Notification
+import json
+from django.shortcuts import get_object_or_404
+from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST, require_GET, require_http_methods
-
-from .forms import RegisterForm, UserForm, UserProfileForm
-from .models import (
-    Book,
-    Comment,
-    Category,
-    Rating,
-    UserProfile,
-    Notification,
-    CourseRegistration,
-    PaymentRequest,
-)
-
+import logging
 logger = logging.getLogger(__name__)
+from django.contrib.auth.decorators import login_required
+from .forms import UserForm, UserProfileForm
+from django.views.decorators.http import require_http_methods
+from django.db import transaction
+from django.contrib.auth.decorators import user_passes_test
+import random
+from django.core.paginator import Paginator
+from .models import CourseRegistration
+from datetime import datetime
+from django.views.decorators.http import require_GET
+from django.contrib import messages
+from decimal import Decimal
+from django.contrib.admin.views.decorators import staff_member_required
+from .models import PaymentRequest
+
+from django.contrib.auth.decorators import login_required, user_passes_test
+import re
 
 
 def register_view(request):
