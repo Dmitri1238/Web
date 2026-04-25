@@ -74,9 +74,11 @@ WSGI_APPLICATION = 'my_django_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASE_URL = "postgresql://neondb_owner:npg_yxHP03zFVBkZ@ep-purple-leaf-amu789d0-pooler.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+
 DATABASES = {
-    'default': dj_database_url.config(default=DATABASE_URL)
+    'default': dj_database_url.config(
+        default=os.environ.get("DATABASE_URL")
+    )
 }
 
 ALLOWED_HOSTS = [".onrender.com"]
