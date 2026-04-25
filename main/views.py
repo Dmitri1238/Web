@@ -47,14 +47,14 @@ def register_view(request):
 
 def login_view(request):
     from django.contrib.auth.forms import AuthenticationForm
-    if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            return redirect('home')
-    else:
-        form = AuthenticationForm()
+
+    form = AuthenticationForm(request, data=request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        user = form.get_user()
+        login(request, user)
+        return redirect('home')
+
     return render(request, 'login.html', {'form': form})
 
 @login_required
