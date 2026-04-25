@@ -121,9 +121,9 @@
     <div class="profile-header">
         <div>
             {% if user.userprofile.avatar %}
-                <img src="{{ user.userprofile.avatar.url }}" class="avatar">
+                <img src="{{ user.userprofile.avatar.url }}" alt="Аватар" class="avatar">
             {% else %}
-                <div class="avatar-placeholder">Нет аватара</div>
+                <div style="width:150px; height:150px; display:flex; align-items:center; justify-content:center; background-color:#e0e0e0; border-radius:10px; font-size:16px; color:#555;">Нет аватара</div>
             {% endif %}
         </div>
         <div class="user-info">
