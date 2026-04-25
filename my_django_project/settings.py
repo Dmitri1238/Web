@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure--dxupv^!dkm0pv0q@gvgqfcpyph@gfnda=ihl^+nng(ju3!7(7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
 # Application definition
@@ -79,11 +79,7 @@ DATABASES = {
     'default': dj_database_url.config(default=DATABASE_URL)
 }
 
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    ".onrender.com"
-]
+ALLOWED_HOSTS = [".onrender.com"]
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
@@ -120,13 +116,12 @@ LANGUAGE_CODE = 'ru'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
+\
 STATIC_URL = '/static/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
