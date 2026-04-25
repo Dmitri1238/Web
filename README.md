@@ -10,7 +10,7 @@
 - Редактирование профиля
 - Выбор курсов
 ## Сайт:
-- https://web-7xpt.onrender.
+- https://web-7xpt.onrender.com
 
 ## Технологии:
 - Python
