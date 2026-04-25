@@ -1,6 +1,6 @@
 from django.http import JsonResponse
+from django.contrib.auth import logout
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout, authenticate
 from .forms import RegisterForm
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
@@ -32,6 +32,8 @@ from .models import PaymentRequest
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 import re
+from django.contrib.auth import login as auth_login
+from django.contrib.auth.forms import AuthenticationForm
 
 
 def register_view(request):
@@ -39,21 +41,21 @@ def register_view(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            auth_login(request, user)
             return redirect('home')
     else:
         form = RegisterForm()
     return render(request, 'register.html', {'form': form})
 
-def login_view(request):
-    from django.contrib.auth.forms import AuthenticationForm
 
+def login_view(request):
     form = AuthenticationForm(request, data=request.POST or None)
 
-    if request.method == 'POST' and form.is_valid():
-        user = form.get_user()
-        login(request, user)
-        return redirect('home')
+    if request.method == 'POST':
+        if form.is_valid():
+            user = form.get_user()
+            auth_login(request, user)
+            return redirect('home')
 
     return render(request, 'login.html', {'form': form})
 
